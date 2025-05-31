@@ -1,0 +1,77 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+#include "user.h"
+#include "utils.h"
+#include "list.h"
+
+struct user
+{
+    int id;
+    char *name;
+    int lenPreferences;
+    char **preferences;
+    List *finishedBooks;
+    List *whishedBooks;
+    List *afinities;
+};
+
+User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
+{
+    User *user = malloc(sizeof(User));
+    assert(user);
+    user->id = id;
+    user->name = name;
+    user->lenPreferences = lenPreferences;
+    user->preferences = preferences;
+    user->finishedBooks = CreateList(FreeBook, PrintBook, IsSameIdOfBook);
+    user->whishedBooks = CreateList(FreeBook, PrintBook, IsSameIdOfBook);
+    user->afinities = CreateList(FreeUser, PrintUser, IsSameIdOfUser);
+
+    return user;
+}
+
+User *ReadUser(FILE *file)
+{
+    int id = 0;
+    char *name = malloc(MAX_LINE_LENGTH * sizeof(char));
+    int lenPreferences = 0;
+    if (fscanf(file, "%d;%[^;];%d", &id, name, &lenPreferences) == EOF)
+        return NULL;
+
+    char **preferences = malloc(lenPreferences * sizeof(char *));
+
+    for (int i = 0; i < lenPreferences; i++)
+    {
+        preferences[i] = malloc(MAX_LINE_LENGTH * sizeof(char));
+        fscanf(file, ";%[^;]", preferences[i]);
+    }
+
+    return CreateUser(id, name, lenPreferences, preferences);
+}
+
+int IsSameIdOfUser(void *ptr, int id)
+{
+    User *user = (User *)ptr;
+    assert(user);
+
+    return user->id == id;
+}
+
+void PrintUser(void *ptr)
+{
+    User *user = (User *)ptr;
+    assert(user);
+    printf("%s\n", user->name);
+}
+
+void FreeUser(void *ptr)
+{
+    User *user = (User *)ptr;
+    assert(user);
+    free(user->name);
+    free(user->preferences);
+    FreeList(user->finishedBooks);
+    FreeList(user->whishedBooks);
+    FreeList(user->afinities);
+}
