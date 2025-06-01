@@ -20,6 +20,8 @@ int main(int argc, char const *argv[])
         AppendList(bookList, book);
     }
 
+    fclose(bookFile);
+
     while (1)
     {
         User *user = ReadUser(userFile);
@@ -30,8 +32,13 @@ int main(int argc, char const *argv[])
         AppendList(userList, user);
     }
 
+    fclose(userFile);
+
     PrintList(bookList);
     PrintList(userList);
+
+    DestroyItemsList(bookList, GetIdBook, FreeBook);
+    DestroyItemsList(userList, GetIdUser, FreeUser);
 
     FreeList(bookList);
     FreeList(userList);
