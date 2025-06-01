@@ -24,9 +24,9 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
     user->name = name;
     user->lenPreferences = lenPreferences;
     user->preferences = preferences;
-    user->finishedBooks = CreateList(FreeBook, PrintBook, IsSameIdOfBook);
-    user->whishedBooks = CreateList(FreeBook, PrintBook, IsSameIdOfBook);
-    user->afinities = CreateList(FreeUser, PrintUser, IsSameIdOfUser);
+    user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
+    user->whishedBooks = CreateList(PrintBook, IsSameIdOfBook);
+    user->afinities = CreateList(PrintUser, IsSameIdOfUser);
 
     return user;
 }

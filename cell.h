@@ -43,7 +43,7 @@ void SetNext(Cell *cell, Cell *next);
 /**
  * @param cell Celula que ainda nao foi liberada
  */
-void FreeCell(Cell *cell, free_fn free_fn);
+void FreeCell(Cell *cell);
 
 /**
  * @param cell Celula previamente criada

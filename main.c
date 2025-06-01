@@ -5,8 +5,8 @@
 
 int main(int argc, char const *argv[])
 {
-    List *bookList = CreateList(FreeBook, PrintBook, IsSameIdOfBook);
-    List *userList = CreateList(FreeUser, PrintUser, IsSameIdOfUser);
+    List *bookList = CreateList(PrintBook, IsSameIdOfBook);
+    List *userList = CreateList(PrintUser, IsSameIdOfUser);
     FILE *bookFile = OpenFileToRead(BOOK_SOURCE_FILE);
     FILE *userFile = OpenFileToRead(USER_SOURCE_FILE);
 
@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
         if (!book)
             break;
 
-        Append(bookList, book);
+        AppendList(bookList, book);
     }
 
     while (1)
@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
         if (!user)
             break;
 
-        Append(userList, user);
+        AppendList(userList, user);
     }
 
     PrintList(bookList);

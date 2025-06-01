@@ -4,28 +4,28 @@
 
 typedef struct list List;
 
-List *CreateList(free_fn free_fn, print_fn print_fn, compare_key_fn compare_key_fn);
+List *CreateList(print_fn print_fn, compare_key_fn compare_key_fn);
 
-int IsEmpty(List *list);
+int IsEmptyList(List *list);
 
-int Count(List *list);
+int CountList(List *list);
 
-void Append(List *list, void *value);
+void AppendList(List *list, void *value);
 
-void Prepend(List *list, void *value);
+void PrependList(List *list, void *value);
 
-void Insert(List *list, void *value, int index);
+void InsertList(List *list, void *value, int index);
 
-void Remove(List *list, int codigo);
+void RemoveList(List *list, int codigo);
 
-void *Find(List *list, int codigo);
+void *FindList(List *list, int codigo);
 
-void *GetFirst(List *list);
+void *GetFirstList(List *list);
 
-void *GetLast(List *list);
+void *GetLastList(List *list);
 
 void PrintList(List *list);
 
 void FreeList(List *list);
 
-void Clear(List *list);
+void ClearList(List *list);

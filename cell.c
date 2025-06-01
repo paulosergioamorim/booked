@@ -43,10 +43,9 @@ void SetNext(Cell *cell, Cell *next)
     cell->next = next;
 }
 
-void FreeCell(Cell *cell, free_fn free_fn)
+void FreeCell(Cell *cell)
 {
     assert(cell);
-    free_fn(cell->value);
     free(cell);
 }
 

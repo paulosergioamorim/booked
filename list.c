@@ -8,18 +8,17 @@ struct list
 {
     Cell *first;
     Cell *last;
-    free_fn free_fn;
     print_fn print_fn;
     compare_key_fn compare_key_fn;
 };
 
-int IsEmpty(List *list)
+int IsEmptyList(List *list)
 {
     assert(list);
     return !list->first;
 }
 
-int Count(List *list)
+int CountList(List *list) //Da pra adicionar o atributo "tamanho" na sentinela, muito custoso contar toda vez.
 {
     assert(list);
     int count = 0;
@@ -34,24 +33,23 @@ int Count(List *list)
     return count;
 }
 
-List *CreateList(free_fn free_fn, print_fn print_fn, compare_key_fn compare_key_fn)
+List *CreateList(print_fn print_fn, compare_key_fn compare_key_fn)
 {
     List *list = malloc(sizeof(List));
     assert(list);
     list->first = list->last = NULL;
-    list->free_fn = free_fn;
     list->print_fn = print_fn;
     list->compare_key_fn = compare_key_fn;
 
     return list;
 }
 
-void Append(List *list, void *value)
+void AppendList(List *list, void *value)
 {
     assert(list);
     Cell *cell = CreateCell(value);
 
-    if (IsEmpty(list))
+    if (IsEmptyList(list))
     {
         list->first = list->last = cell;
         return;
@@ -61,12 +59,12 @@ void Append(List *list, void *value)
     list->last = cell;
 }
 
-void Prepend(List *list, void *value)
+void PrependList(List *list, void *value)
 {
     assert(list);
     Cell *cell = CreateCell(value);
 
-    if (IsEmpty(list))
+    if (IsEmptyList(list))
     {
         list->first = list->last = cell;
         return;
@@ -76,21 +74,21 @@ void Prepend(List *list, void *value)
     list->first = cell;
 }
 
-void Insert(List *list, void *value, int index)
+void InsertList(List *list, void *value, int index)
 {
     assert(list);
 
     if (index == 0)
     {
-        Prepend(list, value);
+        PrependList(list, value);
         return;
     }
 
-    int count = Count(list);
+    int count = CountList(list);
 
     if (index >= count)
     {
-        Append(list, value);
+        AppendList(list, value);
         return;
     }
 
@@ -108,11 +106,11 @@ void Insert(List *list, void *value, int index)
     SetNext(newCell, cur);
 }
 
-void Remove(List *list, int codigo)
+void RemoveList(List *list, int codigo)
 {
     assert(list);
 
-    if (IsEmpty(list))
+    if (IsEmptyList(list))
     {
         return; // list is empty
     }
@@ -135,7 +133,7 @@ void Remove(List *list, int codigo)
     if (cur == list->first)
     {
         list->first = GetNext(cur);
-        FreeCell(cur, list->free_fn);
+        FreeCell(cur);
         return;
     } // first element
 
@@ -143,15 +141,15 @@ void Remove(List *list, int codigo)
     {
         list->last = prev;
         SetNext(prev, NULL);
-        FreeCell(cur, list->free_fn);
+        FreeCell(cur);
         return;
     } // last element
 
     SetNext(prev, GetNext(cur));
-    FreeCell(cur, list->free_fn); // middle element
+    FreeCell(cur); // middle element
 }
 
-void *Find(List *list, int codigo)
+void *FindList(List *list, int codigo)
 {
     assert(list);
     Cell *cur = list->first;
@@ -170,13 +168,13 @@ void *Find(List *list, int codigo)
     return GetValue(cur);
 }
 
-void *GetFirst(List *list)
+void *GetFirstList(List *list)
 {
     assert(list);
     return GetValue(list->first);
 }
 
-void *GetLast(List *list)
+void *GetLastList(List *list)
 {
     assert(list);
     return GetValue(list->last);
@@ -199,11 +197,11 @@ void PrintList(List *list)
 void FreeList(List *list)
 {
     assert(list);
-    Clear(list);
+    ClearList(list);
     free(list);
 }
 
-void Clear(List *list)
+void ClearList(List *list)
 {
     assert(list);
     Cell *cur = list->first;
@@ -212,7 +210,7 @@ void Clear(List *list)
     while (cur)
     {
         next = GetNext(cur);
-        FreeCell(cur, list->free_fn);
+        FreeCell(cur);
         cur = next;
     }
 
