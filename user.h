@@ -15,3 +15,5 @@ int IsSameIdOfUser(void *user, int id);
 void PrintUser(void *user);
 
 void FreeUser(void *user);
+
+int GetIdUser(void *ptr);

@@ -36,8 +36,12 @@ User *ReadUser(FILE *file)
     int id = 0;
     char *name = malloc(MAX_LINE_LENGTH * sizeof(char));
     int lenPreferences = 0;
+
     if (fscanf(file, "%d;%[^;];%d", &id, name, &lenPreferences) == EOF)
+    {
+        free(name);
         return NULL;
+    }
 
     char **preferences = malloc(lenPreferences * sizeof(char *));
 
@@ -70,8 +74,21 @@ void FreeUser(void *ptr)
     User *user = (User *)ptr;
     assert(user);
     free(user->name);
+
+    for (int i = 0; i < user->lenPreferences; i++)
+        free(user->preferences[i]);
+
     free(user->preferences);
+
     FreeList(user->finishedBooks);
     FreeList(user->whishedBooks);
     FreeList(user->afinities);
+
+    free(user);
+}
+
+int GetIdUser(void *ptr) {
+    User *user = (User *)ptr;
+    assert(user);
+    return user->id;
 }
