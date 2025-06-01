@@ -44,7 +44,7 @@ User *ReadUser(FILE *file)
     for (int i = 0; i < lenPreferences; i++)
     {
         preferences[i] = malloc(MAX_LINE_LENGTH * sizeof(char));
-        fscanf(file, ";%[^;]", preferences[i]);
+        fscanf(file, ";%[^;\n]", preferences[i]);
     }
 
     return CreateUser(id, name, lenPreferences, preferences);
