@@ -29,3 +29,5 @@ void PrintList(List *list);
 void FreeList(List *list);
 
 void ClearList(List *list);
+
+void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn);

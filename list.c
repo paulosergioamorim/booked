@@ -216,3 +216,14 @@ void ClearList(List *list)
 
     list->first = NULL;
 }
+
+void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn)
+{
+    assert(list);
+    while(!IsEmptyList(list))
+    {
+        void *item = GetFirstList(list);
+        RemoveList(list, get_id_fn(item));
+        free_fn(item);
+    }
+}
