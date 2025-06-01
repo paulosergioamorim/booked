@@ -1,3 +1,14 @@
+/**
+ * @file list.c
+ * @author Paulo Sergio Amorim, Vitor S. Passamani (email do paulo, vitor.spassamani@gmail.com)
+ * @brief Implementation file of functions that manipulate the list data-structure.
+ * @version 0.1
+ * @date 2025-05-31
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include "list.h"
 #include "cell.h"
 #include <stdlib.h>

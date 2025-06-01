@@ -1,3 +1,14 @@
+/**
+ * @file book.h
+ * @author Paulo Sergio Amorim, Vitor S. Passamani (email do paulo, vitor.spassamani@gmail.com)
+ * @brief Header file for functions that manipulate the book struct.
+ * @version 0.1
+ * @date 2025-05-31
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #pragma once
 
 #define BOOK_SOURCE_FILE "./livros.txt"

@@ -1,3 +1,13 @@
+/**
+ * @file utils.c
+ * @author Paulo Sergio Amorim (email do paulo)
+ * @version 0.1
+ * @date 2025-05-31
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
