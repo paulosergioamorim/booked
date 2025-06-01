@@ -42,7 +42,12 @@ Book *ReadBook(FILE *file)
     char *gender = malloc(MAX_LINE_LENGTH * sizeof(char));
     int yearOfPublication = 0;
     if (fscanf(file, "%d;%[^;];%[^;];%[^;];%d", &id, title, author, gender, &yearOfPublication) == EOF)
+    {
+        free(title);
+        free(author);
+        free(gender);
         return NULL;
+    }
 
     return CreateBook(id, title, author, gender, yearOfPublication);
 }
@@ -62,4 +67,10 @@ void PrintBook(void *ptr)
     Book *book = (Book *)ptr;
     assert(book);
     printf("%s\n", book->title);
+}
+
+int GetIdBook(void *ptr) {
+    Book *book = (Book *)ptr;
+    assert(book);
+    return book->id;
 }

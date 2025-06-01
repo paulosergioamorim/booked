@@ -13,3 +13,5 @@ Book *ReadBook(FILE *file);
 void FreeBook(void *book);
 
 void PrintBook(void *book);
+
+int GetIdBook(void *ptr);
