@@ -1,12 +1,12 @@
 /**
  * @file user.c
- * @author Paulo Sergio Amorim, Vitor S. Passamani (email do paulo, vitor.spassamani@gmail.com)
+ * @author Paulo Sergio Amorim, Vitor S. Passamani (@paulosergioamorim, vitor.spassamani@gmail.com)
  * @brief Implementation file of functions that manipulate the user struct.
  * @version 0.1
  * @date 2025-05-31
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 
 #include <stdlib.h>
@@ -74,20 +74,20 @@ int IsSameIdOfUser(void *ptr, int id)
     return user->id == id;
 }
 
-void PrintAfinitiesUser(User* user)
+void PrintAfinitiesUser(User *user)
 {
     assert(user);
     int listSize = CountList(user->afinities);
 
     if (listSize == 0)
         return;
-    
+
     for (int i = 0; i < listSize - 1; i++)
     {
-        printf("%s, ", ((User*)GetItemByIndexList(user->afinities, i))->name);
+        printf("%s, ", ((User *)GetItemByIndexList(user->afinities, i))->name);
     }
-    
-    printf("%s", ((User*)GetItemByIndexList(user->afinities, listSize-1))->name);
+
+    printf("%s", ((User *)GetItemByIndexList(user->afinities, listSize - 1))->name);
 }
 
 void PrintUser(void *ptr)
@@ -126,7 +126,7 @@ int GetIdUser(void *ptr)
     return user->id;
 }
 
-int AreCompatibleUsers(User *user1, User *user2) 
+int AreCompatibleUsers(User *user1, User *user2)
 {
     assert(user1);
     assert(user2);
@@ -134,7 +134,7 @@ int AreCompatibleUsers(User *user1, User *user2)
     {
         for (int j = 0; j < user2->lenPreferences; j++)
         {
-            if(strcmp(user1->preferences[i], user2->preferences[j]) == 0)
+            if (strcmp(user1->preferences[i], user2->preferences[j]) == 0)
                 return 1;
         }
     }
@@ -142,23 +142,33 @@ int AreCompatibleUsers(User *user1, User *user2)
     return 0;
 }
 
-void ConnectUsers(List* userList)
+/*
+Tive que criar funções para retornar a primeira e a última célula (não o valor) de uma lista. Isso faz com que o usuário "conheça um pouco"
+da estrutura interna da lista. A outra opção era colocar essa função ConnectUsers() dentro de list.h, o que parece pior, já que lista vai ter
+que conhecer user.h
+*/
+void ConnectUsers(List *userList)
 {
-    int listSize = CountList(userList);
+    Cell *cur = GetFirstCellList(userList);
 
-    User *user1 = NULL, *user2 = NULL;
-
-    for (int i = 0; i < listSize; i++)
+    while (cur)
     {
-        user1 = GetItemByIndexList(userList, i); // Performance horrivel percorrer a lista toda hora pra bbuscar o elmento no indice
-        for (int j = i + 1; j < listSize; j++)
+        User *curUser = GetValue(cur);
+        Cell *next = GetNext(cur);
+
+        while (next)
         {
-            user2 = GetItemByIndexList(userList, j);
-            if (AreCompatibleUsers(user1, user2))
+            User *nextUser = GetValue(next);
+
+            if (AreCompatibleUsers(curUser, nextUser))
             {
-                AppendList(user1->afinities, user2);
-                AppendList(user2->afinities, user1);
+                AppendList(curUser->afinities, nextUser);
+                AppendList(nextUser->afinities, curUser);
             }
+
+            next = GetNext(next);
         }
+
+        cur = GetNext(cur);
     }
 }

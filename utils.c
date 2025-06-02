@@ -1,11 +1,11 @@
 /**
  * @file utils.c
- * @author Paulo Sergio Amorim (email do paulo)
+ * @author Paulo Sergio Amorim (@paulosergioamorim)
  * @version 0.1
  * @date 2025-05-31
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 
 #include <stdio.h>

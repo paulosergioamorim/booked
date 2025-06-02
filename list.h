@@ -1,17 +1,18 @@
 /**
  * @file list.h
- * @author Paulo Sergio Amorim, Vitor S. Passamani (email do paulo, vitor.spassamani@gmail.com)
+ * @author Paulo Sergio Amorim, Vitor S. Passamani (@paulosergioamorim, vitor.spassamani@gmail.com)
  * @brief Header file for functions that manipulate the list data-structure.
  * @version 0.1
  * @date 2025-05-31
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 
 #pragma once
 
 #include "utils.h"
+#include "cell.h"
 
 typedef struct list List;
 
@@ -31,9 +32,13 @@ void RemoveList(List *list, int codigo);
 
 void *FindList(List *list, int codigo);
 
-void *GetFirstList(List *list);
+Cell *GetFirstCellList(List *list);
 
-void *GetLastList(List *list);
+Cell *GetLastCellList(List *list);
+
+void *GetFirstValueList(List *list);
+
+void *GetLastValueList(List *list);
 
 void *GetItemByIndexList(List *list, int index);
 
