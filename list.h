@@ -35,6 +35,8 @@ void *GetFirstList(List *list);
 
 void *GetLastList(List *list);
 
+void *GetItemByIndexList(List *list, int index);
+
 void PrintList(List *list);
 
 void FreeList(List *list);

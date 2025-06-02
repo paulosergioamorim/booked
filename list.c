@@ -191,6 +191,23 @@ void *GetLastList(List *list)
     return GetValue(list->last);
 }
 
+void *GetItemByIndexList(List *list, int index) 
+{
+    assert(list);
+
+    Cell *aux = list->first;
+
+    for(int i = 0; i < index && aux != NULL; i++)
+    {
+        aux = GetNext(aux);
+    }
+
+    if(aux != NULL)
+        return GetValue(aux);
+    
+    return NULL;
+}
+
 void PrintList(List *list)
 {
     assert(list);
