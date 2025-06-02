@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 #include "user.h"
 #include "utils.h"
 #include "list.h"
@@ -73,11 +74,31 @@ int IsSameIdOfUser(void *ptr, int id)
     return user->id == id;
 }
 
+void PrintAfinitiesUser(User* user)
+{
+    assert(user);
+    int listSize = CountList(user->afinities);
+
+    if (listSize == 0)
+        return;
+    
+    for (int i = 0; i < listSize - 1; i++)
+    {
+        printf("%s, ", ((User*)GetItemByIndexList(user->afinities, i))->name);
+    }
+    
+    printf("%s", ((User*)GetItemByIndexList(user->afinities, listSize-1))->name);
+}
+
 void PrintUser(void *ptr)
 {
     User *user = (User *)ptr;
     assert(user);
-    printf("%s\n", user->name);
+    printf("\n");
+    printf("Leitor: %s\n", user->name);
+    printf("Afinidades: ");
+    PrintAfinitiesUser(user);
+    printf("\n");
 }
 
 void FreeUser(void *ptr)
@@ -98,8 +119,46 @@ void FreeUser(void *ptr)
     free(user);
 }
 
-int GetIdUser(void *ptr) {
+int GetIdUser(void *ptr)
+{
     User *user = (User *)ptr;
     assert(user);
     return user->id;
+}
+
+int AreCompatibleUsers(User *user1, User *user2) 
+{
+    assert(user1);
+    assert(user2);
+    for (int i = 0; i < user1->lenPreferences; i++)
+    {
+        for (int j = 0; j < user2->lenPreferences; j++)
+        {
+            if(strcmp(user1->preferences[i], user2->preferences[j]) == 0)
+                return 1;
+        }
+    }
+
+    return 0;
+}
+
+void ConnectUsers(List* userList)
+{
+    int listSize = CountList(userList);
+
+    User *user1 = NULL, *user2 = NULL;
+
+    for (int i = 0; i < listSize; i++)
+    {
+        user1 = GetItemByIndexList(userList, i); // Performance horrivel percorrer a lista toda hora pra bbuscar o elmento no indice
+        for (int j = i + 1; j < listSize; j++)
+        {
+            user2 = GetItemByIndexList(userList, j);
+            if (AreCompatibleUsers(user1, user2))
+            {
+                AppendList(user1->afinities, user2);
+                AppendList(user2->afinities, user1);
+            }
+        }
+    }
 }

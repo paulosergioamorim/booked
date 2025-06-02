@@ -12,6 +12,7 @@
 #pragma once
 
 #include "book.h"
+#include "list.h"
 
 #define USER_SOURCE_FILE "./leitores.txt"
 
@@ -28,3 +29,5 @@ void PrintUser(void *user);
 void FreeUser(void *user);
 
 int GetIdUser(void *ptr);
+
+void ConnectUsers(List* userList);
