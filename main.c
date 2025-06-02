@@ -32,6 +32,8 @@ int main(int argc, char const *argv[])
         AppendList(userList, user);
     }
 
+    ConnectUsers(userList);
+
     fclose(userFile);
 
     PrintList(bookList);
