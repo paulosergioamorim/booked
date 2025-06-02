@@ -1,3 +1,7 @@
-1;Alice;2;Romance; Terror
-2;Bob;2;Terror;Mistério
+1;Alice;2;Romance;Terror
+2;Bob;2;Terror;Misterio
 3;Clara;1;Misterio
+4;Roberto;3;Romance;Ficcao Cientifica;Historia
+5;Claudio;1;Historia
+6;Joao;2;Romance;Misterio
+7;Carlos;1;Terror
