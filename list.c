@@ -1,12 +1,12 @@
 /**
  * @file list.c
- * @author Paulo Sergio Amorim, Vitor S. Passamani (email do paulo, vitor.spassamani@gmail.com)
+ * @author Paulo Sergio Amorim, Vitor S. Passamani (@paulosergioamorim, vitor.spassamani@gmail.com)
  * @brief Implementation file of functions that manipulate the list data-structure.
  * @version 0.1
  * @date 2025-05-31
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 
 #include "list.h"
@@ -29,7 +29,7 @@ int IsEmptyList(List *list)
     return !list->first;
 }
 
-int CountList(List *list) //Da pra adicionar o atributo "tamanho" na sentinela, muito custoso contar toda vez.
+int CountList(List *list) // Da pra adicionar o atributo "tamanho" na sentinela, muito custoso contar toda vez.
 {
     assert(list);
     int count = 0;
@@ -179,32 +179,44 @@ void *FindList(List *list, int codigo)
     return GetValue(cur);
 }
 
-void *GetFirstList(List *list)
+Cell *GetFirstCellList(List *list)
+{
+    assert(list);
+    return list->first;
+}
+
+Cell *GetLastCellList(List *list)
+{
+    assert(list);
+    return list->last;
+}
+
+void *GetFirstValueList(List *list)
 {
     assert(list);
     return GetValue(list->first);
 }
 
-void *GetLastList(List *list)
+void *GetLastValueList(List *list)
 {
     assert(list);
     return GetValue(list->last);
 }
 
-void *GetItemByIndexList(List *list, int index) 
+void *GetItemByIndexList(List *list, int index)
 {
     assert(list);
 
     Cell *aux = list->first;
 
-    for(int i = 0; i < index && aux != NULL; i++)
+    for (int i = 0; i < index && aux != NULL; i++)
     {
         aux = GetNext(aux);
     }
 
-    if(aux != NULL)
+    if (aux != NULL)
         return GetValue(aux);
-    
+
     return NULL;
 }
 
@@ -248,9 +260,9 @@ void ClearList(List *list)
 void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn)
 {
     assert(list);
-    while(!IsEmptyList(list))
+    while (!IsEmptyList(list))
     {
-        void *item = GetFirstList(list);
+        void *item = GetFirstValueList(list);
         RemoveList(list, get_id_fn(item));
         free_fn(item);
     }
