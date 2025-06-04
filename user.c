@@ -33,7 +33,7 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
     User *user = malloc(sizeof(User));
     assert(user);
     user->id = id;
-    user->name = name;
+    user->name = strndup(name, strlen(name));
     user->lenPreferences = lenPreferences;
     user->preferences = preferences;
     user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
@@ -46,12 +46,11 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
 User *ReadUser(FILE *file)
 {
     int id = 0;
-    char *name = malloc(MAX_LINE_LENGTH * sizeof(char));
+    char name[MAX_LINE_LENGTH] = "";
     int lenPreferences = 0;
 
     if (fscanf(file, "%d;%[^;];%d", &id, name, &lenPreferences) == EOF)
     {
-        free(name);
         return NULL;
     }
 
@@ -59,8 +58,9 @@ User *ReadUser(FILE *file)
 
     for (int i = 0; i < lenPreferences; i++)
     {
-        preferences[i] = malloc(MAX_LINE_LENGTH * sizeof(char));
-        fscanf(file, ";%[^;\n]", preferences[i]);
+        char preference[MAX_LINE_LENGTH] = "";
+        fscanf(file, ";%[^;\n]", preference);
+        preferences[i] = strndup(preference, strlen(preference));
     }
 
     return CreateUser(id, name, lenPreferences, preferences);
