@@ -142,33 +142,15 @@ int AreCompatibleUsers(User *user1, User *user2)
     return 0;
 }
 
-/*
-Tive que criar funções para retornar a primeira e a última célula (não o valor) de uma lista. Isso faz com que o usuário "conheça um pouco"
-da estrutura interna da lista. A outra opção era colocar essa função ConnectUsers() dentro de list.h, o que parece pior, já que lista vai ter
-que conhecer user.h
-*/
-void ConnectUsers(List *userList)
+void ConnectUsers(void *ptr1, void *ptr2)
 {
-    Cell *cur = GetFirstCellList(userList);
+    User *user1 = (User *)ptr1;
+    User *user2 = (User *)ptr2;
+    assert(user1 && user2);
 
-    while (cur)
+    if (AreCompatibleUsers(user1, user2))
     {
-        User *curUser = GetValue(cur);
-        Cell *next = GetNext(cur);
-
-        while (next)
-        {
-            User *nextUser = GetValue(next);
-
-            if (AreCompatibleUsers(curUser, nextUser))
-            {
-                AppendList(curUser->afinities, nextUser);
-                AppendList(nextUser->afinities, curUser);
-            }
-
-            next = GetNext(next);
-        }
-
-        cur = GetNext(cur);
+        AppendList(user1->afinities, user2);
+        AppendList(user2->afinities, user1);
     }
 }

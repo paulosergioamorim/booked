@@ -30,4 +30,4 @@ void FreeUser(void *user);
 
 int GetIdUser(void *ptr);
 
-void ConnectUsers(List *userList);
+void ConnectUsers(void *ptr1, void *ptr2);
