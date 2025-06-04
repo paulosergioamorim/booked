@@ -37,7 +37,12 @@ int main(int argc, char const *argv[])
     fclose(userFile);
 
     PrintList(bookList);
+
+    printf("\n");
+
     PrintList(userList);
+
+    printf("\n");
 
     DestroyItemsList(bookList, GetIdBook, FreeBook);
     DestroyItemsList(userList, GetIdUser, FreeUser);

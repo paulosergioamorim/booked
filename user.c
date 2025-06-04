@@ -28,6 +28,8 @@ struct user
     List *afinities;
 };
 
+void PrintAfinity(void *ptr, int isLast);
+
 User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
 {
     User *user = malloc(sizeof(User));
@@ -38,7 +40,7 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
     user->preferences = preferences;
     user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
     user->whishedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->afinities = CreateList(PrintUser, IsSameIdOfUser);
+    user->afinities = CreateList(PrintAfinity, IsSameIdOfUser);
 
     return user;
 }
@@ -74,30 +76,14 @@ int IsSameIdOfUser(void *ptr, int id)
     return user->id == id;
 }
 
-void PrintAfinitiesUser(User *user)
-{
-    assert(user);
-    int listSize = CountList(user->afinities);
-
-    if (listSize == 0)
-        return;
-
-    for (int i = 0; i < listSize - 1; i++)
-    {
-        printf("%s, ", ((User *)GetItemByIndexList(user->afinities, i))->name);
-    }
-
-    printf("%s", ((User *)GetItemByIndexList(user->afinities, listSize - 1))->name);
-}
-
-void PrintUser(void *ptr)
+void PrintUser(void *ptr, int)
 {
     User *user = (User *)ptr;
     assert(user);
     printf("\n");
     printf("Leitor: %s\n", user->name);
     printf("Afinidades: ");
-    PrintAfinitiesUser(user);
+    PrintList(user->afinities);
     printf("\n");
 }
 
@@ -130,6 +116,7 @@ int AreCompatibleUsers(User *user1, User *user2)
 {
     assert(user1);
     assert(user2);
+
     for (int i = 0; i < user1->lenPreferences; i++)
     {
         for (int j = 0; j < user2->lenPreferences; j++)
@@ -153,4 +140,14 @@ void ConnectUsers(void *ptr1, void *ptr2)
         AppendList(user1->afinities, user2);
         AppendList(user2->afinities, user1);
     }
+}
+
+void PrintAfinity(void *ptr, int isLast)
+{
+    User *user = (User *)ptr;
+    assert(user);
+    printf("%s", user->name);
+
+    if (!isLast)
+        printf(", ");
 }

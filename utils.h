@@ -20,10 +20,10 @@ char *ReadLine();
 
 typedef void (*free_fn)(void *);
 
-typedef int (*compare_key_fn)(void *, int key);
+typedef int (*compare_key_fn)(void *, int);
 
-typedef int (*get_id_fn)(void *item);
+typedef int (*get_id_fn)(void *);
 
-typedef void (*print_fn)(void *);
+typedef void (*print_fn)(void *, int);
 
 typedef void (*iter_fn)(void *, void *);

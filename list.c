@@ -215,11 +215,9 @@ void PrintList(List *list)
 
     while (cur)
     {
-        list->print_fn(GetValue(cur));
+        list->print_fn(GetValue(cur), IsLast(cur));
         cur = GetNext(cur);
     }
-
-    printf("\n");
 }
 
 void FreeList(List *list)
@@ -248,6 +246,7 @@ void ClearList(List *list)
 void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn)
 {
     assert(list);
+
     while (!IsEmptyList(list))
     {
         void *item = GetFirstList(list);

@@ -12,7 +12,6 @@
 #pragma once
 
 #include "utils.h"
-#include "cell.h"
 
 typedef struct list List;
 

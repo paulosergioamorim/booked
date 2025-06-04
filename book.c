@@ -72,7 +72,7 @@ void FreeBook(void *ptr)
     free(book);
 }
 
-void PrintBook(void *ptr)
+void PrintBook(void *ptr, int)
 {
     Book *book = (Book *)ptr;
     assert(book);
