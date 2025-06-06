@@ -30,9 +30,9 @@ Book *CreateBook(int id, char *title, char *author, char *gender, int yearOfPubl
     Book *book = malloc(sizeof(Book));
     assert(book);
     book->id = id;
-    book->title = strndup(title, strlen(title));
-    book->author = strndup(author, strlen(author));
-    book->gender = strndup(gender, strlen(gender));
+    book->title = strdup(title);
+    book->author = strdup(author);
+    book->gender = strdup(gender);
     book->yearOfPublication = yearOfPublication;
 
     return book;
