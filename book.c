@@ -72,11 +72,16 @@ void FreeBook(void *ptr)
     free(book);
 }
 
-void PrintBook(void *ptr, int)
+void PrintBook(void *ptr, int isLast)
 {
     Book *book = (Book *)ptr;
     assert(book);
-    printf("%s\n", book->title);
+    printf("%s", book->title);
+
+    if (!isLast)
+    {
+        printf(", ");
+    }
 }
 
 int GetIdBook(void *ptr)

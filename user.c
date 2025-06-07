@@ -25,6 +25,7 @@ struct user
     char **preferences;
     List *finishedBooks;
     List *whishedBooks;
+    List *recommendedBooks;
     List *afinities;
 };
 
@@ -40,6 +41,7 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
     user->preferences = preferences;
     user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
     user->whishedBooks = CreateList(PrintBook, IsSameIdOfBook);
+    user->recommendedBooks = CreateList(PrintBook, IsSameIdOfBook);
     user->afinities = CreateList(PrintAfinity, IsSameIdOfUser);
 
     return user;
@@ -80,11 +82,19 @@ void PrintUser(void *ptr, int)
 {
     User *user = (User *)ptr;
     assert(user);
-    printf("\n");
     printf("Leitor: %s\n", user->name);
+    printf("Lidos: ");
+    PrintList(user->finishedBooks);
+    printf("\n");
+    printf("Desejados: ");
+    PrintList(user->whishedBooks);
+    printf("\n");
+    printf("Recomendacoes: ");
+    PrintList(user->recommendedBooks);
+    printf("\n");
     printf("Afinidades: ");
     PrintList(user->afinities);
-    printf("\n");
+    printf("\n\n");
 }
 
 void FreeUser(void *ptr)
@@ -100,6 +110,7 @@ void FreeUser(void *ptr)
 
     FreeList(user->finishedBooks);
     FreeList(user->whishedBooks);
+    FreeList(user->recommendedBooks);
     FreeList(user->afinities);
 
     free(user);
@@ -149,5 +160,46 @@ void PrintAfinity(void *ptr, int isLast)
     printf("%s", user->name);
 
     if (!isLast)
+    {
         printf(", ");
+    }
+}
+
+/*
+ * TODO: IMPLEMENTAR FRASES DE LOG DAS FUNÇÕES ABAIXO
+ */
+
+void AddBookToFinishedUser(User *user1, Book *book, User *user2)
+{
+    assert(user1 && book);
+    AppendList(user1->finishedBooks, book);
+}
+
+void AddBookToWishedUser(User *user1, Book *book, User *user2)
+{
+    assert(user1 && book);
+    AppendList(user1->whishedBooks, book);
+}
+
+void AddBookToRecommendedUser(User *user1, Book *book, User *user2)
+{
+    assert(user1 && book);
+
+    if (!FindList(user1->finishedBooks, GetIdBook(book)))
+    {
+        AppendList(user1->recommendedBooks, book);
+    }
+}
+
+void AcceptRecommendedBook(User *user1, Book *book, User *user2)
+{
+    assert(user1 && book);
+    AppendList(user1->whishedBooks, book);
+    RemoveList(user1->recommendedBooks, GetIdBook(book));
+}
+
+void DenyRecommendedBook(User *user1, Book *book, User *user2)
+{
+    assert(user2 && book);
+    RemoveList(user2->recommendedBooks, GetIdBook(book));
 }

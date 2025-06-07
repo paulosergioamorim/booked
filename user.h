@@ -31,3 +31,13 @@ void FreeUser(void *user);
 int GetIdUser(void *ptr);
 
 void ConnectUsers(void *ptr1, void *ptr2);
+
+void AddBookToFinishedUser(User *user1, Book *book, User *user2);
+
+void AddBookToWishedUser(User *user1, Book *book, User *user2);
+
+void AddBookToRecommendedUser(User *user1, Book *book, User *user2);
+
+void AcceptRecommendedBook(User *user1, Book *book, User *user2);
+
+void DenyRecommendedBook(User *user1, Book *book, User *user2);
