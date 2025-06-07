@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "book.h"
 #include "utils.h"
 
@@ -29,9 +30,9 @@ Book *CreateBook(int id, char *title, char *author, char *gender, int yearOfPubl
     Book *book = malloc(sizeof(Book));
     assert(book);
     book->id = id;
-    book->title = title;
-    book->author = author;
-    book->gender = gender;
+    book->title = strdup(title);
+    book->author = strdup(author);
+    book->gender = strdup(gender);
     book->yearOfPublication = yearOfPublication;
 
     return book;
@@ -48,15 +49,13 @@ int IsSameIdOfBook(void *ptr, int id)
 Book *ReadBook(FILE *file)
 {
     int id = 0;
-    char *title = malloc(MAX_LINE_LENGTH * sizeof(char));
-    char *author = malloc(MAX_LINE_LENGTH * sizeof(char));
-    char *gender = malloc(MAX_LINE_LENGTH * sizeof(char));
+    char title[MAX_LINE_LENGTH] = "";
+    char author[MAX_LINE_LENGTH] = "";
+    char gender[MAX_LINE_LENGTH] = "";
     int yearOfPublication = 0;
+
     if (fscanf(file, "%d;%[^;];%[^;];%[^;];%d", &id, title, author, gender, &yearOfPublication) == EOF)
     {
-        free(title);
-        free(author);
-        free(gender);
         return NULL;
     }
 
@@ -73,11 +72,16 @@ void FreeBook(void *ptr)
     free(book);
 }
 
-void PrintBook(void *ptr)
+void PrintBook(void *ptr, int isLast)
 {
     Book *book = (Book *)ptr;
     assert(book);
-    printf("%s\n", book->title);
+    printf("%s", book->title);
+
+    if (!isLast)
+    {
+        printf(", ");
+    }
 }
 
 int GetIdBook(void *ptr)

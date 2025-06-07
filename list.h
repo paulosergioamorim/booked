@@ -12,7 +12,6 @@
 #pragma once
 
 #include "utils.h"
-#include "cell.h"
 
 typedef struct list List;
 
@@ -32,13 +31,9 @@ void RemoveList(List *list, int codigo);
 
 void *FindList(List *list, int codigo);
 
-Cell *GetFirstCellList(List *list);
+void *GetFirstList(List *list);
 
-Cell *GetLastCellList(List *list);
-
-void *GetFirstValueList(List *list);
-
-void *GetLastValueList(List *list);
+void *GetLastList(List *list);
 
 void *GetItemByIndexList(List *list, int index);
 
@@ -49,3 +44,5 @@ void FreeList(List *list);
 void ClearList(List *list);
 
 void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn);
+
+void IterList(List *list, iter_fn iter_fn);

@@ -25,20 +25,24 @@ struct user
     char **preferences;
     List *finishedBooks;
     List *whishedBooks;
+    List *recommendedBooks;
     List *afinities;
 };
+
+void PrintAfinity(void *ptr, int isLast);
 
 User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
 {
     User *user = malloc(sizeof(User));
     assert(user);
     user->id = id;
-    user->name = name;
+    user->name = strdup(name);
     user->lenPreferences = lenPreferences;
     user->preferences = preferences;
     user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
     user->whishedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->afinities = CreateList(PrintUser, IsSameIdOfUser);
+    user->recommendedBooks = CreateList(PrintBook, IsSameIdOfBook);
+    user->afinities = CreateList(PrintAfinity, IsSameIdOfUser);
 
     return user;
 }
@@ -46,12 +50,11 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
 User *ReadUser(FILE *file)
 {
     int id = 0;
-    char *name = malloc(MAX_LINE_LENGTH * sizeof(char));
+    char name[MAX_LINE_LENGTH] = "";
     int lenPreferences = 0;
 
     if (fscanf(file, "%d;%[^;];%d", &id, name, &lenPreferences) == EOF)
     {
-        free(name);
         return NULL;
     }
 
@@ -59,8 +62,9 @@ User *ReadUser(FILE *file)
 
     for (int i = 0; i < lenPreferences; i++)
     {
-        preferences[i] = malloc(MAX_LINE_LENGTH * sizeof(char));
-        fscanf(file, ";%[^;\n]", preferences[i]);
+        char preference[MAX_LINE_LENGTH] = "";
+        fscanf(file, ";%[^;\n]", preference);
+        preferences[i] = strdup(preference);
     }
 
     return CreateUser(id, name, lenPreferences, preferences);
@@ -74,31 +78,23 @@ int IsSameIdOfUser(void *ptr, int id)
     return user->id == id;
 }
 
-void PrintAfinitiesUser(User *user)
-{
-    assert(user);
-    int listSize = CountList(user->afinities);
-
-    if (listSize == 0)
-        return;
-
-    for (int i = 0; i < listSize - 1; i++)
-    {
-        printf("%s, ", ((User *)GetItemByIndexList(user->afinities, i))->name);
-    }
-
-    printf("%s", ((User *)GetItemByIndexList(user->afinities, listSize - 1))->name);
-}
-
-void PrintUser(void *ptr)
+void PrintUser(void *ptr, int)
 {
     User *user = (User *)ptr;
     assert(user);
-    printf("\n");
     printf("Leitor: %s\n", user->name);
-    printf("Afinidades: ");
-    PrintAfinitiesUser(user);
+    printf("Lidos: ");
+    PrintList(user->finishedBooks);
     printf("\n");
+    printf("Desejados: ");
+    PrintList(user->whishedBooks);
+    printf("\n");
+    printf("Recomendacoes: ");
+    PrintList(user->recommendedBooks);
+    printf("\n");
+    printf("Afinidades: ");
+    PrintList(user->afinities);
+    printf("\n\n");
 }
 
 void FreeUser(void *ptr)
@@ -114,6 +110,7 @@ void FreeUser(void *ptr)
 
     FreeList(user->finishedBooks);
     FreeList(user->whishedBooks);
+    FreeList(user->recommendedBooks);
     FreeList(user->afinities);
 
     free(user);
@@ -130,6 +127,7 @@ int AreCompatibleUsers(User *user1, User *user2)
 {
     assert(user1);
     assert(user2);
+
     for (int i = 0; i < user1->lenPreferences; i++)
     {
         for (int j = 0; j < user2->lenPreferences; j++)
@@ -142,33 +140,66 @@ int AreCompatibleUsers(User *user1, User *user2)
     return 0;
 }
 
-/*
-Tive que criar funções para retornar a primeira e a última célula (não o valor) de uma lista. Isso faz com que o usuário "conheça um pouco"
-da estrutura interna da lista. A outra opção era colocar essa função ConnectUsers() dentro de list.h, o que parece pior, já que lista vai ter
-que conhecer user.h
-*/
-void ConnectUsers(List *userList)
+void ConnectUsers(void *ptr1, void *ptr2)
 {
-    Cell *cur = GetFirstCellList(userList);
+    User *user1 = (User *)ptr1;
+    User *user2 = (User *)ptr2;
+    assert(user1 && user2);
 
-    while (cur)
+    if (AreCompatibleUsers(user1, user2))
     {
-        User *curUser = GetValue(cur);
-        Cell *next = GetNext(cur);
-
-        while (next)
-        {
-            User *nextUser = GetValue(next);
-
-            if (AreCompatibleUsers(curUser, nextUser))
-            {
-                AppendList(curUser->afinities, nextUser);
-                AppendList(nextUser->afinities, curUser);
-            }
-
-            next = GetNext(next);
-        }
-
-        cur = GetNext(cur);
+        AppendList(user1->afinities, user2);
+        AppendList(user2->afinities, user1);
     }
+}
+
+void PrintAfinity(void *ptr, int isLast)
+{
+    User *user = (User *)ptr;
+    assert(user);
+    printf("%s", user->name);
+
+    if (!isLast)
+    {
+        printf(", ");
+    }
+}
+
+/*
+ * TODO: IMPLEMENTAR FRASES DE LOG DAS FUNÇÕES ABAIXO
+ */
+
+void AddBookToFinishedUser(User *user1, Book *book, User *user2)
+{
+    assert(user1 && book);
+    AppendList(user1->finishedBooks, book);
+}
+
+void AddBookToWishedUser(User *user1, Book *book, User *user2)
+{
+    assert(user1 && book);
+    AppendList(user1->whishedBooks, book);
+}
+
+void AddBookToRecommendedUser(User *user1, Book *book, User *user2)
+{
+    assert(user1 && book);
+
+    if (!FindList(user1->finishedBooks, GetIdBook(book)))
+    {
+        AppendList(user1->recommendedBooks, book);
+    }
+}
+
+void AcceptRecommendedBook(User *user1, Book *book, User *user2)
+{
+    assert(user1 && book);
+    AppendList(user1->whishedBooks, book);
+    RemoveList(user1->recommendedBooks, GetIdBook(book));
+}
+
+void DenyRecommendedBook(User *user1, Book *book, User *user2)
+{
+    assert(user2 && book);
+    RemoveList(user2->recommendedBooks, GetIdBook(book));
 }

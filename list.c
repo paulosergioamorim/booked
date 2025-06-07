@@ -179,25 +179,13 @@ void *FindList(List *list, int codigo)
     return GetValue(cur);
 }
 
-Cell *GetFirstCellList(List *list)
-{
-    assert(list);
-    return list->first;
-}
-
-Cell *GetLastCellList(List *list)
-{
-    assert(list);
-    return list->last;
-}
-
-void *GetFirstValueList(List *list)
+void *GetFirstList(List *list)
 {
     assert(list);
     return GetValue(list->first);
 }
 
-void *GetLastValueList(List *list)
+void *GetLastList(List *list)
 {
     assert(list);
     return GetValue(list->last);
@@ -227,11 +215,9 @@ void PrintList(List *list)
 
     while (cur)
     {
-        list->print_fn(GetValue(cur));
+        list->print_fn(GetValue(cur), IsLast(cur));
         cur = GetNext(cur);
     }
-
-    printf("\n");
 }
 
 void FreeList(List *list)
@@ -260,10 +246,32 @@ void ClearList(List *list)
 void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn)
 {
     assert(list);
+
     while (!IsEmptyList(list))
     {
-        void *item = GetFirstValueList(list);
+        void *item = GetFirstList(list);
         RemoveList(list, get_id_fn(item));
         free_fn(item);
+    }
+}
+
+void IterList(List *list, iter_fn iter_fn)
+{
+    assert(list);
+    Cell *cur = list->first;
+
+    while (cur)
+    {
+        void *curVal = GetValue(cur);
+        Cell *next = GetNext(cur);
+
+        while (next)
+        {
+            void *nextVal = GetValue(next);
+            iter_fn(curVal, nextVal);
+            next = GetNext(next);
+        }
+
+        cur = GetNext(cur);
     }
 }

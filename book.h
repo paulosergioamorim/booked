@@ -23,6 +23,6 @@ Book *ReadBook(FILE *file);
 
 void FreeBook(void *book);
 
-void PrintBook(void *book);
+void PrintBook(void *book, int);
 
 int GetIdBook(void *ptr);
