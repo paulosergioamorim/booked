@@ -275,3 +275,35 @@ void IterList(List *list, iter_fn iter_fn)
         cur = GetNext(cur);
     }
 }
+
+
+List *GetCommonItemsList(List* list1, List *list2, compare_key_fn compareKey, print_fn print, compare_items_fn compareItems)
+{
+    assert(list1);
+    assert(list2);
+    List *commonItems = CreateList(print, compareKey);
+
+    Cell *c1 = list1->first;
+    Cell *c2 = NULL;
+    while (c1 != NULL)
+    {
+        c2 = list2->first;
+        while (c2 != NULL)
+        {
+            if (compareItems(GetValue(c1), GetValue(c2)))
+            {
+                AppendList(commonItems, GetValue(c1));
+                break;
+            }
+            c2 = GetNext(c2);
+        }
+        c1 = GetNext(c1);
+    }
+
+    if (IsEmptyList(commonItems)) {
+        FreeList(commonItems);
+        return NULL;
+    }
+
+    return commonItems;
+}

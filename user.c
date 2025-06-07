@@ -203,3 +203,25 @@ void DenyRecommendedBook(User *user1, Book *book, User *user2)
     assert(user2 && book);
     RemoveList(user2->recommendedBooks, GetIdBook(book));
 }
+
+void PrintSharedBooksUsers(User* user1, User* user2)
+{
+    assert(user1);
+    assert(user2);
+
+    printf("Livros em comum entre %s e %s: ", user1->name, user2->name);
+    
+    // linha terrivelmente longa, desculpa.
+    List *sharedBooks = GetCommonItemsList(user1->finishedBooks, user2->finishedBooks, IsSameIdOfBook, PrintBook, CompareBooks);
+
+    if (sharedBooks != NULL)
+    {
+        PrintList(sharedBooks);
+        FreeList(sharedBooks);
+    }
+    else
+        printf("Nenhum livro em comum");
+    
+    printf("\n");
+
+}

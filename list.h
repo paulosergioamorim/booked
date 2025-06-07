@@ -46,3 +46,5 @@ void ClearList(List *list);
 void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn);
 
 void IterList(List *list, iter_fn iter_fn);
+
+List *GetCommonItemsList(List* list1, List *list2, compare_key_fn compare, print_fn print, compare_items_fn compareItems);

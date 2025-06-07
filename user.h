@@ -41,3 +41,5 @@ void AddBookToRecommendedUser(User *user1, Book *book, User *user2);
 void AcceptRecommendedBook(User *user1, Book *book, User *user2);
 
 void DenyRecommendedBook(User *user1, Book *book, User *user2);
+
+void PrintSharedBooksUsers(User* user1, User* user2);

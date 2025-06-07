@@ -9,6 +9,8 @@ typedef void (*command_fn)(User *user1, Book *book, User *user2);
 
 int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, List *bookList);
 
+void format_PrintSharedBooksUsers(User *user1, Book *book, User *user2);
+
 int main(int argc, char const *argv[])
 {
     List *bookList = CreateList(PrintBook, IsSameIdOfBook);
@@ -22,6 +24,7 @@ int main(int argc, char const *argv[])
         AddBookToFinishedUser,
         AddBookToRecommendedUser,
         AcceptRecommendedBook,
+        format_PrintSharedBooksUsers,
         DenyRecommendedBook,
     };
 
@@ -84,11 +87,15 @@ int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, Lis
     Book *book = FindList(bookList, idBook);
     User *user2 = FindList(userList, idUser2);
 
-    if (op > 5)
+    if (op > 6)
     {
         return 1;
     }
 
     commands[op - 1](user1, book, user2);
     return 1;
+}
+
+void format_PrintSharedBooksUsers(User *user1, Book *book, User *user2) {
+    PrintSharedBooksUsers(user1, user2);
 }

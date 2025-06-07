@@ -90,3 +90,15 @@ int GetIdBook(void *ptr)
     assert(book);
     return book->id;
 }
+
+
+int CompareBooks(void *ptr1, void *ptr2)
+{
+    assert(ptr1);
+    assert(ptr2);
+
+    Book *book1 = (Book*)ptr1;
+    Book *book2 = (Book*)ptr2;
+
+    return book1->id == book2->id;
+}
