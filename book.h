@@ -26,3 +26,5 @@ void FreeBook(void *book);
 void PrintBook(void *book, int);
 
 int GetIdBook(void *ptr);
+
+int CompareBooks(void *book1, void *book2);
