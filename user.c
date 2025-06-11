@@ -123,6 +123,12 @@ int GetIdUser(void *ptr)
     return user->id;
 }
 
+char* GetNameUser(void *ptr) {
+    assert(ptr);
+
+    return ((User*)ptr)->name;
+}
+
 int AreCompatibleUsers(User *user1, User *user2)
 {
     assert(user1);
@@ -204,6 +210,7 @@ void DenyRecommendedBook(User *user1, Book *book, User *user2)
     RemoveList(user2->recommendedBooks, GetIdBook(book));
 }
 
+//corrigir depois
 void PrintSharedBooksUsers(User* user1, User* user2)
 {
     assert(user1);
@@ -214,14 +221,63 @@ void PrintSharedBooksUsers(User* user1, User* user2)
     // linha terrivelmente longa, desculpa.
     List *sharedBooks = GetCommonItemsList(user1->finishedBooks, user2->finishedBooks, IsSameIdOfBook, PrintBook, CompareBooks);
 
-    if (sharedBooks != NULL)
-    {
-        PrintList(sharedBooks);
-        FreeList(sharedBooks);
-    }
-    else
+    if (IsEmptyList(sharedBooks))
         printf("Nenhum livro em comum");
+    else
+        PrintList(sharedBooks);
     
     printf("\n");
 
+    FreeList(sharedBooks);
+}
+
+int SearchUser(User* user, int id, List* visited)
+{   
+    assert(user);
+    assert(visited);
+
+    // Implementação do algoritimo de busca em profundidade:
+
+    // O nó atual já foi visitado.
+    if (FindList(visited, GetIdUser(user)))
+        return 0;
+
+    AppendList(visited, user);
+    
+    // Encontrou o usuário no nó atual.
+    if (IsSameIdOfUser(user, id))
+        return 1;
+
+    // Inicia a busca nos filhos do nó atual:
+    Cell* currentCell = GetFirstCellList(user->afinities);
+    
+    // Loop que percorre os irmaos
+    while (currentCell != NULL)
+    {
+        User* currentUser = GetValue(currentCell);
+
+        // Busca recursivamente até encontrar o usuário ou chegar ao fim do ramo.
+        if (SearchUser(currentUser, id, visited))
+            return 1;
+
+        // Passa para o nó irmão e continua a busca.
+        currentCell = GetNext(currentCell);
+    }
+    // Acabaram os nós irmãos
+    
+    return 0;
+}
+
+int AreRelatedUsers(User* user1, User* user2)
+{
+    assert(user1);
+    assert(user2);
+
+    List* visitedUsers = CreateList(PrintUser, IsSameIdOfUser);
+
+    int result = SearchUser(user1, user2->id, visitedUsers);
+
+    FreeList(visitedUsers);
+
+    return result;
 }

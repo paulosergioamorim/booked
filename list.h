@@ -12,6 +12,7 @@
 #pragma once
 
 #include "utils.h"
+#include "cell.h"
 
 typedef struct list List;
 
@@ -36,6 +37,8 @@ void *GetFirstList(List *list);
 void *GetLastList(List *list);
 
 void *GetItemByIndexList(List *list, int index);
+
+Cell *GetFirstCellList(List* list);
 
 void PrintList(List *list);
 

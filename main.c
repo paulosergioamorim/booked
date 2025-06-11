@@ -2,6 +2,7 @@
 #include "book.h"
 #include "user.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define COMMAND_SOURCE_FILE "./comandos.txt"
 
@@ -11,13 +12,34 @@ int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, Lis
 
 void format_PrintSharedBooksUsers(User *user1, Book *book, User *user2);
 
+void format_AreRelatedUsers(User *user1, Book *book, User *user2);
+
 int main(int argc, char const *argv[])
 {
     List *bookList = CreateList(PrintBook, IsSameIdOfBook);
     List *userList = CreateList(PrintUser, IsSameIdOfUser);
-    FILE *bookFile = OpenFileToRead(BOOK_SOURCE_FILE);
-    FILE *userFile = OpenFileToRead(USER_SOURCE_FILE);
-    FILE *commandFile = OpenFileToRead(COMMAND_SOURCE_FILE);
+
+    FILE *bookFile = NULL;
+    if ((bookFile =  OpenFileToRead(BOOK_SOURCE_FILE)) == NULL)
+    {
+        printf("[ERRO] - Nao foi possivel abrir o arquivo 'livros.txt'\n");
+        exit(1);
+    }
+    
+    FILE *userFile = NULL;
+    if ((userFile = OpenFileToRead(USER_SOURCE_FILE)) == NULL)
+    {
+        printf("[ERRO] - Nao foi possivel abrir o arquivo 'leitores.txt'\n");
+        exit(1);
+    }
+    
+    FILE* commandFile = NULL;
+    if ((commandFile = OpenFileToRead(COMMAND_SOURCE_FILE)) == NULL)
+    {
+        printf("[ERRO] - Nao foi possivel abrir o arquivo 'comandos.txt'\n");
+        exit(1);
+    }
+
     command_fn commands[] = {
         AddBookToFinishedUser,
         AddBookToWishedUser,
@@ -25,8 +47,14 @@ int main(int argc, char const *argv[])
         AddBookToRecommendedUser,
         AcceptRecommendedBook,
         format_PrintSharedBooksUsers,
-        DenyRecommendedBook,
+        format_AreRelatedUsers,
+        DenyRecommendedBook
     };
+
+    // Removebdo as linhas de cabeçalho:
+    fscanf(bookFile, "%*[^\n]\n");
+    fscanf(commandFile, "%*[^\n]\n");
+    fscanf(userFile, "%*[^\n]\n");
 
     while (1)
     {
@@ -87,10 +115,10 @@ int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, Lis
     Book *book = FindList(bookList, idBook);
     User *user2 = FindList(userList, idUser2);
 
-    if (op > 6)
-    {
-        return 1;
-    }
+    // if (op > 6)
+    // {
+    //     return 1;
+    // }
 
     commands[op - 1](user1, book, user2);
     return 1;
@@ -98,4 +126,13 @@ int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, Lis
 
 void format_PrintSharedBooksUsers(User *user1, Book *book, User *user2) {
     PrintSharedBooksUsers(user1, user2);
+}
+
+void format_AreRelatedUsers(User *user1, Book *book, User *user2) {
+    if (AreRelatedUsers(user1, user2))
+        printf("Existe "); 
+    else
+        printf("Nao existe ");
+
+    printf("afinidade entre %s e %s.\n", GetNameUser(user1), GetNameUser(user2));
 }
