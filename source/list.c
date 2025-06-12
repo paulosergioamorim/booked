@@ -208,6 +208,12 @@ void *GetItemByIndexList(List *list, int index)
     return NULL;
 }
 
+Cell *GetFirstCellList(List* list) {
+    assert(list);
+
+    return list->first;
+}
+
 void PrintList(List *list)
 {
     assert(list);
@@ -298,11 +304,6 @@ List *GetCommonItemsList(List* list1, List *list2, compare_key_fn compareKey, pr
             c2 = GetNext(c2);
         }
         c1 = GetNext(c1);
-    }
-
-    if (IsEmptyList(commonItems)) {
-        FreeList(commonItems);
-        return NULL;
     }
 
     return commonItems;

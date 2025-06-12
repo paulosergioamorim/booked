@@ -1,3 +1,5 @@
-main
+booked
+obj/
+tests/**/saidas/
 .vscode
 *.pdf
