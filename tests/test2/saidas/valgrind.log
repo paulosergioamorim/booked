@@ -1,0 +1,33 @@
+==47885== Memcheck, a memory error detector
+==47885== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==47885== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+==47885== Command: ./../../booked
+==47885== Parent PID: 47856
+==47885== 
+==47885== 
+==47885== Process terminating with default action of signal 6 (SIGABRT)
+==47885==    at 0x48F0EEC: __pthread_kill_implementation (pthread_kill.c:44)
+==47885==    by 0x48A1FB1: raise (raise.c:26)
+==47885==    by 0x488C471: abort (abort.c:79)
+==47885==    by 0x488C394: __assert_fail_base.cold (assert.c:94)
+==47885==    by 0x489AEC1: __assert_fail (assert.c:103)
+==47885==    by 0x10B786: PrintSharedBooksUsers (in /home/vitor/Documentos/Estudos/bash/scripts/testing/booked)
+==47885==    by 0x10AA81: format_PrintSharedBooksUsers (in /home/vitor/Documentos/Estudos/bash/scripts/testing/booked)
+==47885==    by 0x10AA53: ExecuteCommand (in /home/vitor/Documentos/Estudos/bash/scripts/testing/booked)
+==47885==    by 0x10A8E7: main (in /home/vitor/Documentos/Estudos/bash/scripts/testing/booked)
+==47885== 
+==47885== HEAP SUMMARY:
+==47885==     in use at exit: 17,672 bytes in 211 blocks
+==47885==   total heap usage: 222 allocs, 11 frees, 22,593 bytes allocated
+==47885== 
+==47885== LEAK SUMMARY:
+==47885==    definitely lost: 0 bytes in 0 blocks
+==47885==    indirectly lost: 0 bytes in 0 blocks
+==47885==      possibly lost: 0 bytes in 0 blocks
+==47885==    still reachable: 17,672 bytes in 211 blocks
+==47885==         suppressed: 0 bytes in 0 blocks
+==47885== Reachable blocks (those to which a pointer was found) are not shown.
+==47885== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==47885== 
+==47885== For lists of detected and suppressed errors, rerun with: -s
+==47885== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

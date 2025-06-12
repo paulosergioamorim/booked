@@ -1,0 +1,189 @@
+0a1,48
+> Amanda leu "Dom Casmurro"
+> Amanda leu "O Alienista"
+> Bruno leu "O Nome da Rosa"
+> Carla leu "Capitães da Areia"
+> Diego leu "O Coruja"
+> Elena leu "A Droga da Obediência"
+> Felipe leu "O Hobbit"
+> Gabriela leu "O Tempo e o Vento"
+> Henrique leu "Vaga Música"
+> Isabela leu "E Não Sobrou Nenhum"
+> João leu "Robinson Crusoé"
+> Karen leu "Triste Fim de Policarpo Quaresma"
+> Leonardo leu "O Guarani"
+> Mariana leu "Admirável Mundo Novo"
+> Nicolas leu "O Senhor dos Anéis"
+> Olivia leu "Auto da Barca do Inferno"
+> Amanda deseja ler "A Cartomante"
+> Bruno deseja ler "Dom Casmurro"
+> Carla deseja ler "Minha Vida de Menina"
+> Diego deseja ler "Admirável Mundo Novo"
+> Elena deseja ler "O Senhor dos Anéis"
+> Felipe deseja ler "Casa-Grande & Senzala"
+> Gabriela deseja ler "Vaga Música"
+> Henrique deseja ler "Capitães da Areia"
+> Isabela deseja ler "As Aventuras de Tom Sawyer"
+> João deseja ler "A Droga da Obediência"
+> Karen deseja ler "O Hobbit"
+> Leonardo deseja ler "O Tempo e o Vento"
+> Mariana deseja ler "O Nome da Rosa"
+> Nicolas deseja ler "Robinson Crusoé"
+> Olivia deseja ler "O Coruja"
+> Bruno já deseja ler "Dom Casmurro", recomendação desnecessária
+> Bruno recomenda "O Nome da Rosa" para Carla
+> Henrique já deseja ler "Capitães da Areia", recomendação desnecessária
+> Diego recomenda "O Coruja" para Elena
+> Elena recomenda "A Droga da Obediência" para Felipe
+> Felipe recomenda "O Hobbit" para Gabriela
+> Gabriela recomenda "O Tempo e o Vento" para Amanda
+> Henrique recomenda "Vaga Música" para Isabela
+> Isabela recomenda "E Não Sobrou Nenhum" para João
+> João recomenda "Robinson Crusoé" para Karen
+> Karen recomenda "Triste Fim de Policarpo Quaresma" para Leonardo
+> Leonardo recomenda "O Guarani" para Mariana
+> Mariana recomenda "Admirável Mundo Novo" para Nicolas
+> Nicolas recomenda "O Senhor dos Anéis" para Olivia
+> Olivia recomenda "Auto da Barca do Inferno" para Amanda
+> Bruno não possui recomendação do livro ID 1 feita por Amanda
+> Gabriela não possui recomendação do livro ID 4 feita por Amanda
+7,18c55,68
+< Existe afinidade entre Amanda e Gabriela.
+< Existe afinidade entre Bruno e Isabela.
+< Existe afinidade entre Carla e Olivia.
+< Existe afinidade entre Elena e Nicolas.
+< Existe afinidade entre Felipe e Leonardo.
+< Existe afinidade entre Henrique e Mariana.
+< Existe afinidade entre João e Diego.
+< Existe afinidade entre Bruno e Elena.
+< Existe afinidade entre João e Olivia.
+< Existe afinidade entre Felipe e Diego.
+< Existe afinidade entre Henrique e Nicolas.
+< Existe afinidade entre Diego e Karen.
+---
+> Existe afinidade entre Amanda e Gabriela
+> Existe afinidade entre Bruno e Isabela
+> Existe afinidade entre Carla e Olivia
+> Existe afinidade entre Elena e Nicolas
+> Existe afinidade entre Felipe e Leonardo
+> Existe afinidade entre Henrique e Mariana
+> Existe afinidade entre João e Diego
+> Existe afinidade entre Bruno e Elena
+> Existe afinidade entre João e Olivia
+> Existe afinidade entre Felipe e Diego
+> Existe afinidade entre Henrique e Nicolas
+> Existe afinidade entre Diego e Karen
+> Imprime toda a BookED
+> 
+20c70
+< Lidos: Dom Casmurro, O Alienista, Dom Casmurro
+---
+> Lidos: Dom Casmurro, O Alienista
+22c72
+< Recomendacoes: 
+---
+> Recomendacoes: O Tempo e o Vento, Auto da Barca do Inferno
+26c76
+< Lidos: O Nome da Rosa, O Nome da Rosa
+---
+> Lidos: O Nome da Rosa
+28c78
+< Recomendacoes: Dom Casmurro
+---
+> Recomendacoes: 
+32c82
+< Lidos: Capitães da Areia, Capitães da Areia
+---
+> Lidos: Capitães da Areia
+34c84
+< Recomendacoes: 
+---
+> Recomendacoes: O Nome da Rosa
+38c88
+< Lidos: O Coruja, O Coruja
+---
+> Lidos: O Coruja
+44c94
+< Lidos: A Droga da Obediência, A Droga da Obediência
+---
+> Lidos: A Droga da Obediência
+46c96
+< Recomendacoes: 
+---
+> Recomendacoes: O Coruja
+50c100
+< Lidos: O Hobbit, O Hobbit
+---
+> Lidos: O Hobbit
+52c102
+< Recomendacoes: 
+---
+> Recomendacoes: A Droga da Obediência
+56,58c106,108
+< Lidos: O Tempo e o Vento, O Tempo e o Vento
+< Desejados: Vaga Música, O Tempo e o Vento
+< Recomendacoes: 
+---
+> Lidos: O Tempo e o Vento
+> Desejados: Vaga Música
+> Recomendacoes: O Hobbit
+62c112
+< Lidos: Vaga Música, Vaga Música
+---
+> Lidos: Vaga Música
+68c118
+< Lidos: E Não Sobrou Nenhum, E Não Sobrou Nenhum
+---
+> Lidos: E Não Sobrou Nenhum
+70c120
+< Recomendacoes: 
+---
+> Recomendacoes: Vaga Música
+74c124
+< Lidos: Robinson Crusoé, Robinson Crusoé
+---
+> Lidos: Robinson Crusoé
+76c126
+< Recomendacoes: 
+---
+> Recomendacoes: E Não Sobrou Nenhum
+80c130
+< Lidos: Triste Fim de Policarpo Quaresma, Triste Fim de Policarpo Quaresma
+---
+> Lidos: Triste Fim de Policarpo Quaresma
+82c132
+< Recomendacoes: 
+---
+> Recomendacoes: Robinson Crusoé
+86c136
+< Lidos: O Guarani, O Guarani
+---
+> Lidos: O Guarani
+88c138
+< Recomendacoes: 
+---
+> Recomendacoes: Triste Fim de Policarpo Quaresma
+92c142
+< Lidos: Admirável Mundo Novo, Admirável Mundo Novo
+---
+> Lidos: Admirável Mundo Novo
+94c144
+< Recomendacoes: 
+---
+> Recomendacoes: O Guarani
+98c148
+< Lidos: O Senhor dos Anéis, O Senhor dos Anéis
+---
+> Lidos: O Senhor dos Anéis
+100c150
+< Recomendacoes: 
+---
+> Recomendacoes: Admirável Mundo Novo
+104c154
+< Lidos: Auto da Barca do Inferno, Auto da Barca do Inferno
+---
+> Lidos: Auto da Barca do Inferno
+106c156
+< Recomendacoes: 
+---
+> Recomendacoes: O Senhor dos Anéis
