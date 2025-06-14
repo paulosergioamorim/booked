@@ -28,3 +28,5 @@ void PrintBook(void *book, int);
 int GetIdBook(void *ptr);
 
 int CompareBooks(void *book1, void *book2);
+
+char *GetTitleBook(Book *book);
