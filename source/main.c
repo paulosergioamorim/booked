@@ -20,20 +20,20 @@ int main(int argc, char const *argv[])
     List *userList = CreateList(PrintUser, IsSameIdOfUser);
 
     FILE *bookFile = NULL;
-    if ((bookFile =  OpenFileToRead(BOOK_SOURCE_FILE)) == NULL)
+    if ((bookFile = OpenFileToRead(BOOK_SOURCE_FILE)) == NULL)
     {
         printf("[ERRO] - Nao foi possivel abrir o arquivo 'livros.txt'\n");
         exit(1);
     }
-    
+
     FILE *userFile = NULL;
     if ((userFile = OpenFileToRead(USER_SOURCE_FILE)) == NULL)
     {
         printf("[ERRO] - Nao foi possivel abrir o arquivo 'leitores.txt'\n");
         exit(1);
     }
-    
-    FILE* commandFile = NULL;
+
+    FILE *commandFile = NULL;
     if ((commandFile = OpenFileToRead(COMMAND_SOURCE_FILE)) == NULL)
     {
         printf("[ERRO] - Nao foi possivel abrir o arquivo 'comandos.txt'\n");
@@ -41,14 +41,13 @@ int main(int argc, char const *argv[])
     }
 
     command_fn commands[] = {
-        AddBookToFinishedUser,
-        AddBookToWishedUser,
-        AddBookToFinishedUser,
-        AddBookToRecommendedUser,
-        AcceptRecommendedBook,
-        format_PrintSharedBooksUsers,
-        format_AreRelatedUsers,
-        DenyRecommendedBook
+        AddBookToFinishedUser,        // 1
+        AddBookToWishedUser,          // 2
+        AddBookToRecommendedUser,     // 3
+        AcceptRecommendedBook,        // 4
+        DenyRecommendedBook,          // 5
+        format_PrintSharedBooksUsers, // 6
+        format_AreRelatedUsers,       // 7
     };
 
     // Removebdo as linhas de cabeçalho:
@@ -107,6 +106,7 @@ int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, Lis
 
     if (op == 8)
     {
+        printf("Imprime toda a BookED\n\n");
         PrintList(userList);
         return 1;
     }
@@ -124,15 +124,17 @@ int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, Lis
     return 1;
 }
 
-void format_PrintSharedBooksUsers(User *user1, Book *book, User *user2) {
+void format_PrintSharedBooksUsers(User *user1, Book *book, User *user2)
+{
     PrintSharedBooksUsers(user1, user2);
 }
 
-void format_AreRelatedUsers(User *user1, Book *book, User *user2) {
+void format_AreRelatedUsers(User *user1, Book *book, User *user2)
+{
     if (AreRelatedUsers(user1, user2))
-        printf("Existe "); 
+        printf("Existe ");
     else
         printf("Nao existe ");
 
-    printf("afinidade entre %s e %s.\n", GetNameUser(user1), GetNameUser(user2));
+    printf("afinidade entre %s e %s\n", GetNameUser(user1), GetNameUser(user2));
 }
