@@ -3,3 +3,4 @@ obj/
 tests/**/saidas/
 .vscode
 *.pdf
+docs/*
