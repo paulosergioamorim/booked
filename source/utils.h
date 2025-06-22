@@ -28,4 +28,6 @@ typedef int (*get_id_fn)(void *);
 
 typedef void (*print_fn)(void *, int);
 
+typedef void (*for_each_fn)(void *);
+
 typedef void (*iter_fn)(void *, void *);

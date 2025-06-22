@@ -127,8 +127,8 @@ int main(int argc, char const *argv[])
     fclose(commandFile);
     fclose(userFile);
 
-    DestroyItemsList(bookList, GetIdBook, FreeBook);
-    DestroyItemsList(userList, GetIdUser, FreeUser);
+    ForEach(bookList, FreeBook);
+    ForEach(userList, FreeUser);
 
     FreeList(bookList);
     FreeList(userList);

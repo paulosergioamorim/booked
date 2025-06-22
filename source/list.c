@@ -283,6 +283,18 @@ void IterList(List *list, iter_fn iter_fn)
     }
 }
 
+void ForEach(List *list, for_each_fn for_each_fn)
+{
+    assert(list);
+    Cell *cur = list->first;
+
+    while (cur)
+    {
+        for_each_fn(GetValue(cur));
+        cur = GetNext(cur);
+    }
+}
+
 List *GetCommonItemsList(List *list1, List *list2, compare_key_fn compareKey, print_fn print, compare_items_fn compareItems)
 {
     assert(list1);
