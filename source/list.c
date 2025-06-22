@@ -208,7 +208,8 @@ void *GetItemByIndexList(List *list, int index)
     return NULL;
 }
 
-Cell *GetFirstCellList(List* list) {
+Cell *GetFirstCellList(List *list)
+{
     assert(list);
 
     return list->first;
@@ -282,8 +283,7 @@ void IterList(List *list, iter_fn iter_fn)
     }
 }
 
-
-List *GetCommonItemsList(List* list1, List *list2, compare_key_fn compareKey, print_fn print, compare_items_fn compareItems)
+List *GetCommonItemsList(List *list1, List *list2, compare_key_fn compareKey, print_fn print, compare_items_fn compareItems)
 {
     assert(list1);
     assert(list2);

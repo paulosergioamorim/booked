@@ -5,14 +5,54 @@
 #include <stdlib.h>
 
 #define COMMAND_SOURCE_FILE "./comandos.txt"
+#define COMMAND_PARAMS List *userList, List *bookList, int idUser1, int idBook, int idUser2
+#define UNIQUE_USER_NOT_NULL(id)                               \
+    User *user = FindList(userList, id);                       \
+    if (!user)                                                 \
+    {                                                          \
+        printf("Erro: Leitor com ID %d não encontrado\n", id); \
+        return;                                                \
+    }
+#define BOTH_USERS_NOT_NULL(idUser1, idUser2)                       \
+    User *user1 = FindList(userList, idUser1);                      \
+    User *user2 = FindList(userList, idUser2);                      \
+    if (!user1)                                                     \
+    {                                                               \
+        printf("Erro: Leitor com ID %d não encontrado\n", idUser1); \
+        return;                                                     \
+    }                                                               \
+    if (!user2)                                                     \
+    {                                                               \
+        printf("Erro: Leitor com ID %d não encontrado\n", idUser2); \
+        return;                                                     \
+    }
+#define UNIQUE_BOOK_NOT_NULL(id)                              \
+    Book *book = FindList(bookList, id);                      \
+    if (!book)                                                \
+    {                                                         \
+        printf("Erro: Livro com ID %d não encontrado\n", id); \
+        return;                                               \
+    }
 
-typedef void (*command_fn)(User *user1, Book *book, User *user2);
+typedef void (*command_fn)(COMMAND_PARAMS);
 
 int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, List *bookList);
 
-void format_PrintSharedBooksUsers(User *user1, Book *book, User *user2);
+void format_AddBookToFinishedUser(COMMAND_PARAMS);
 
-void format_AreRelatedUsers(User *user1, Book *book, User *user2);
+void format_AddBookToWishedUser(COMMAND_PARAMS);
+
+void format_AddBookToRecommendedUser(COMMAND_PARAMS);
+
+void format_AcceptRecommendedBook(COMMAND_PARAMS);
+
+void format_DenyRecommendedBook(COMMAND_PARAMS);
+
+void format_PrintSharedBooksUsers(COMMAND_PARAMS);
+
+void format_AreRelatedUsers(COMMAND_PARAMS);
+
+void format_PrintUsers(COMMAND_PARAMS);
 
 int main(int argc, char const *argv[])
 {
@@ -41,13 +81,14 @@ int main(int argc, char const *argv[])
     }
 
     command_fn commands[] = {
-        AddBookToFinishedUser,        // 1
-        AddBookToWishedUser,          // 2
-        AddBookToRecommendedUser,     // 3
-        AcceptRecommendedBook,        // 4
-        DenyRecommendedBook,          // 5
-        format_PrintSharedBooksUsers, // 6
-        format_AreRelatedUsers,       // 7
+        format_AddBookToFinishedUser,    // 1
+        format_AddBookToWishedUser,      // 2
+        format_AddBookToRecommendedUser, // 3
+        format_AcceptRecommendedBook,    // 4
+        format_DenyRecommendedBook,      // 5
+        format_PrintSharedBooksUsers,    // 6
+        format_AreRelatedUsers,          // 7
+        format_PrintUsers                // 8
     };
 
     // Removebdo as linhas de cabeçalho:
@@ -104,37 +145,106 @@ int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, Lis
     if (fscanf(commandFile, "%d;%d;%d;%d", &op, &idUser1, &idBook, &idUser2) == EOF)
         return 0;
 
-    if (op == 8)
+    if (op < 1 || op > 8)
     {
-        printf("Imprime toda a BookED\n\n");
-        PrintList(userList);
+        printf("Erro: Comando %d não reconhecido\n", op);
         return 1;
     }
 
-    User *user1 = FindList(userList, idUser1);
-    Book *book = FindList(bookList, idBook);
-    User *user2 = FindList(userList, idUser2);
-
-    // if (op > 6)
-    // {
-    //     return 1;
-    // }
-
-    commands[op - 1](user1, book, user2);
+    commands[op - 1](userList, bookList, idUser1, idBook, idUser2);
     return 1;
 }
 
-void format_PrintSharedBooksUsers(User *user1, Book *book, User *user2)
+void format_AddBookToFinishedUser(COMMAND_PARAMS)
 {
+    UNIQUE_USER_NOT_NULL(idUser1);
+    UNIQUE_BOOK_NOT_NULL(idBook);
+    AddBookToFinishedUser(user, book);
+}
+
+void format_AddBookToWishedUser(COMMAND_PARAMS)
+{
+    UNIQUE_USER_NOT_NULL(idUser1);
+    UNIQUE_BOOK_NOT_NULL(idBook);
+    AddBookToWishedUser(user, book);
+}
+
+void format_AddBookToRecommendedUser(COMMAND_PARAMS)
+{
+    User *recommendindUser = FindList(userList, idUser1);
+    User *recommendedUser = FindList(userList, idUser2);
+    UNIQUE_BOOK_NOT_NULL(idBook);
+
+    if (!recommendindUser)
+    {
+        printf("Erro: Leitor recomendador com ID %d não encontrado\n", idUser1);
+        return;
+    }
+
+    if (!recommendedUser)
+    {
+        printf("Erro: Leitor destinatário com ID %d não encontrado\n", idUser2);
+        return;
+    }
+
+    if (recommendindUser == recommendedUser)
+    {
+        printf("%s não pode recomendar livros para si mesmo\n", GetNameUser(recommendindUser));
+        return;
+    }
+
+    AddBookToRecommendedUser(recommendindUser, book, recommendedUser);
+}
+
+void format_AcceptRecommendedBook(COMMAND_PARAMS)
+{
+    BOTH_USERS_NOT_NULL(idUser1, idUser2)
+    UNIQUE_BOOK_NOT_NULL(idBook);
+
+    AcceptRecommendedBook(user1, book, user2);
+}
+
+void format_DenyRecommendedBook(COMMAND_PARAMS)
+{
+    User *recommendedUser = FindList(userList, idUser1);
+    User *recommendindUser = FindList(userList, idUser2);
+    UNIQUE_BOOK_NOT_NULL(idBook);
+
+    if (!recommendindUser)
+    {
+        printf("Erro: Leitor recomendador com ID %d não encontrado\n", idUser2);
+        return;
+    }
+
+    if (!recommendedUser)
+    {
+        printf("Erro: Leitor destinatário com ID %d não encontrado\n", idUser1);
+        return;
+    }
+
+    DenyRecommendedBook(recommendedUser, book, recommendindUser);
+}
+
+void format_PrintSharedBooksUsers(COMMAND_PARAMS)
+{
+    BOTH_USERS_NOT_NULL(idUser1, idUser2);
     PrintSharedBooksUsers(user1, user2);
 }
 
-void format_AreRelatedUsers(User *user1, Book *book, User *user2)
+void format_AreRelatedUsers(COMMAND_PARAMS)
 {
+    BOTH_USERS_NOT_NULL(idUser1, idUser2);
+
     if (AreRelatedUsers(user1, user2))
         printf("Existe ");
     else
-        printf("Nao existe ");
+        printf("Não existe ");
 
     printf("afinidade entre %s e %s\n", GetNameUser(user1), GetNameUser(user2));
+}
+
+void format_PrintUsers(COMMAND_PARAMS)
+{
+    printf("Imprime toda a BookED\n\n");
+    PrintList(userList);
 }

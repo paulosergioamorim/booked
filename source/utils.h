@@ -22,7 +22,7 @@ typedef void (*free_fn)(void *);
 
 typedef int (*compare_key_fn)(void *, int);
 
-typedef int (*compare_items_fn)(void *, void*);
+typedef int (*compare_items_fn)(void *, void *);
 
 typedef int (*get_id_fn)(void *);
 

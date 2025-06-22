@@ -25,7 +25,7 @@ struct user
     char **preferences;
     List *finishedBooks;
     List *whishedBooks;
-    List *recommendedBooks;
+    List *recommendations;
     List *afinities;
 };
 
@@ -41,7 +41,7 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
     user->preferences = preferences;
     user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
     user->whishedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->recommendedBooks = CreateList(PrintBook, IsSameIdOfBook);
+    user->recommendations = CreateList(PrintBook, IsSameIdOfBook);
     user->afinities = CreateList(PrintAfinity, IsSameIdOfUser);
 
     return user;
@@ -90,7 +90,7 @@ void PrintUser(void *ptr, int)
     PrintList(user->whishedBooks);
     printf("\n");
     printf("Recomendacoes: ");
-    PrintList(user->recommendedBooks);
+    PrintList(user->recommendations);
     printf("\n");
     printf("Afinidades: ");
     PrintList(user->afinities);
@@ -110,7 +110,7 @@ void FreeUser(void *ptr)
 
     FreeList(user->finishedBooks);
     FreeList(user->whishedBooks);
-    FreeList(user->recommendedBooks);
+    FreeList(user->recommendations);
     FreeList(user->afinities);
 
     free(user);
@@ -151,7 +151,8 @@ void ConnectUsers(void *ptr1, void *ptr2)
 {
     User *user1 = (User *)ptr1;
     User *user2 = (User *)ptr2;
-    assert(user1 && user2);
+    assert(user1);
+    assert(user2);
 
     if (AreCompatibleUsers(user1, user2))
     {
@@ -176,9 +177,10 @@ void PrintAfinity(void *ptr, int isLast)
  * TODO: IMPLEMENTAR FRASES DE LOG DAS FUNÇÕES ABAIXO
  */
 
-void AddBookToFinishedUser(User *user1, Book *book, User *user2)
+void AddBookToFinishedUser(User *user1, Book *book)
 {
-    assert(user1 && book);
+    assert(user1);
+    assert(book);
 
     if (!FindList(user1->finishedBooks, GetIdBook(book)))
     {
@@ -190,9 +192,10 @@ void AddBookToFinishedUser(User *user1, Book *book, User *user2)
     printf("%s já leu \"%s\"\n", user1->name, GetTitleBook(book));
 }
 
-void AddBookToWishedUser(User *user1, Book *book, User *user2)
+void AddBookToWishedUser(User *user1, Book *book)
 {
-    assert(user1 && book);
+    assert(user1);
+    assert(book);
 
     if (!FindList(user1->whishedBooks, GetIdBook(book)))
     {
@@ -206,18 +209,20 @@ void AddBookToWishedUser(User *user1, Book *book, User *user2)
 
 void AddBookToRecommendedUser(User *user1, Book *book, User *user2)
 {
-    assert(user1 && user2 && book);
+    assert(user1);
+    assert(user2);
+    assert(book);
 
-    if (user1 == user2)
+    if (FindList(user2->recommendations, GetIdBook(book)))
     {
-        printf("%s não pode recomendar livros para si mesmo\n", user1->name);
+        printf("%s já deseja ler \"%s\", recomendação desnecessária\n", user2->name, GetTitleBook(book));
         return;
     }
 
     if (!FindList(user2->finishedBooks, GetIdBook(book)))
     {
         printf("%s recomenda \"%s\" para %s\n", user1->name, GetTitleBook(book), user2->name);
-        AppendList(user2->recommendedBooks, book);
+        AppendList(user2->recommendations, book);
         return;
     }
 
@@ -226,13 +231,15 @@ void AddBookToRecommendedUser(User *user1, Book *book, User *user2)
 
 void AcceptRecommendedBook(User *user1, Book *book, User *user2)
 {
-    assert(user1 && book);
+    assert(user1);
+    assert(user2);
+    assert(book);
 
-    if (FindList(user1->recommendedBooks, GetIdBook(book)))
+    if (FindList(user1->recommendations, GetIdBook(book)))
     {
         printf("%s aceita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
         AppendList(user1->whishedBooks, book);
-        RemoveList(user1->recommendedBooks, GetIdBook(book));
+        RemoveList(user1->recommendations, GetIdBook(book));
         return;
     }
 
@@ -241,12 +248,14 @@ void AcceptRecommendedBook(User *user1, Book *book, User *user2)
 
 void DenyRecommendedBook(User *user1, Book *book, User *user2)
 {
-    assert(user2 && book);
+    assert(user1);
+    assert(user2);
+    assert(book);
 
-    if (FindList(user1->recommendedBooks, GetIdBook(book)))
+    if (FindList(user1->recommendations, GetIdBook(book)))
     {
         printf("%s rejeita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
-        RemoveList(user1->recommendedBooks, GetIdBook(book));
+        RemoveList(user1->recommendations, GetIdBook(book));
         return;
     }
 
