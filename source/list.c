@@ -121,25 +121,20 @@ void RemoveList(List *list, int codigo)
 {
     assert(list);
 
-    if (IsEmptyList(list))
-    {
-        return; // list is empty
-    }
-
     Cell *prev = NULL;
     Cell *cur = list->first;
 
-    while (1)
+    while (cur)
     {
         if (list->compare_key_fn(GetValue(cur), codigo))
             break;
 
-        if (IsLast(cur))
-            return; // not found element
-
         prev = cur;
         cur = GetNext(cur);
     }
+
+    if (!cur)
+        return; // not found
 
     if (cur == list->first)
     {
@@ -206,6 +201,16 @@ void *GetItemByIndexList(List *list, int index)
         return GetValue(aux);
 
     return NULL;
+}
+
+void SetFirstList(List *list, Cell *cell)
+{
+    list->first = cell;
+}
+
+void SetLastList(List *list, Cell *cell)
+{
+    list->last = cell;
 }
 
 Cell *GetFirstCellList(List *list)

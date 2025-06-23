@@ -18,6 +18,8 @@
 
 typedef struct user User;
 
+#include "recommendation.h"
+
 User *CreateUser(int id, char *name, int lenPreferences, char **preferences);
 
 User *ReadUser(FILE *file);
@@ -47,3 +49,7 @@ void DenyRecommendedBook(User *user1, Book *book, User *user2);
 void PrintSharedBooksUsers(User *user1, User *user2);
 
 int AreRelatedUsers(User *user1, User *user2);
+
+Recommendation *FindRecommendation(User *user, Book *recommendedBook, User *recommendingUser);
+
+void RemoveRecommendation(User *user, Recommendation *recommendation);

@@ -16,6 +16,7 @@
 #include "user.h"
 #include "utils.h"
 #include "list.h"
+#include "recommendation.h"
 
 struct user
 {
@@ -41,7 +42,7 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
     user->preferences = preferences;
     user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
     user->whishedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->recommendations = CreateList(PrintBook, IsSameIdOfBook);
+    user->recommendations = CreateList(PrintRecommendation, NULL);
     user->afinities = CreateList(PrintAfinity, IsSameIdOfUser);
 
     return user;
@@ -110,6 +111,7 @@ void FreeUser(void *ptr)
 
     FreeList(user->finishedBooks);
     FreeList(user->whishedBooks);
+    ForEach(user->recommendations, free);
     FreeList(user->recommendations);
     FreeList(user->afinities);
 
@@ -213,7 +215,7 @@ void AddBookToRecommendedUser(User *user1, Book *book, User *user2)
     assert(user2);
     assert(book);
 
-    if (FindList(user2->recommendations, GetIdBook(book)))
+    if (FindList(user2->whishedBooks, GetIdBook(book)))
     {
         printf("%s já deseja ler \"%s\", recomendação desnecessária\n", user2->name, GetTitleBook(book));
         return;
@@ -222,7 +224,8 @@ void AddBookToRecommendedUser(User *user1, Book *book, User *user2)
     if (!FindList(user2->finishedBooks, GetIdBook(book)))
     {
         printf("%s recomenda \"%s\" para %s\n", user1->name, GetTitleBook(book), user2->name);
-        AppendList(user2->recommendations, book);
+        Recommendation *recommendation = CreateRecommendation(book, user1);
+        AppendList(user2->recommendations, recommendation);
         return;
     }
 
@@ -234,12 +237,13 @@ void AcceptRecommendedBook(User *user1, Book *book, User *user2)
     assert(user1);
     assert(user2);
     assert(book);
+    Recommendation *recommendation = NULL;
 
-    if (FindList(user1->recommendations, GetIdBook(book)))
+    if ((recommendation = FindRecommendation(user1, book, user2)))
     {
         printf("%s aceita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
         AppendList(user1->whishedBooks, book);
-        RemoveList(user1->recommendations, GetIdBook(book));
+        RemoveRecommendation(user1, recommendation);
         return;
     }
 
@@ -251,11 +255,12 @@ void DenyRecommendedBook(User *user1, Book *book, User *user2)
     assert(user1);
     assert(user2);
     assert(book);
+    Recommendation *recommendation = NULL;
 
-    if (FindList(user1->recommendations, GetIdBook(book)))
+    if ((recommendation = FindRecommendation(user1, book, user2)))
     {
         printf("%s rejeita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
-        RemoveList(user1->recommendations, GetIdBook(book));
+        RemoveRecommendation(user1, recommendation);
         return;
     }
 
@@ -332,4 +337,67 @@ int AreRelatedUsers(User *user1, User *user2)
     FreeList(visitedUsers);
 
     return result;
+}
+
+Recommendation *FindRecommendation(User *user, Book *recommendedBook, User *recommendingUser)
+{
+    Cell *cur = GetFirstCellList(user->recommendations);
+
+    while (cur)
+    {
+        Recommendation *val = GetValue(cur);
+
+        if (GetBookRecommendation(val) == recommendedBook && GetRecommendingUserRecommendation(val) == recommendingUser)
+            return GetValue(cur);
+
+        cur = GetNext(cur);
+    }
+
+    return NULL;
+}
+
+void RemoveRecommendation(User *user, Recommendation *recommendation)
+{
+    List *list = user->recommendations;
+    Cell *first = GetFirstCellList(list);
+    Cell *last = GetLastList(list);
+    Cell *prev = NULL;
+    Cell *cur = first;
+    Recommendation *value = NULL;
+
+    while (cur)
+    {
+        value = GetValue(cur);
+
+        if (value == recommendation)
+            break;
+
+        prev = cur;
+        cur = GetNext(cur);
+    }
+
+    if (!cur)
+        return;
+
+    if (cur == first)
+    {
+        SetFirstList(list, GetNext(first));
+        free(value);
+        FreeCell(cur);
+        return;
+    }
+
+    if (cur == last)
+    {
+        SetLastList(list, prev);
+        SetNext(prev, NULL);
+        free(value);
+        FreeCell(cur);
+        return;
+    }
+
+    SetNext(prev, GetNext(cur));
+    free(value);
+    FreeCell(cur);
+    return;
 }

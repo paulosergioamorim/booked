@@ -32,6 +32,10 @@ void RemoveList(List *list, int codigo);
 
 void *FindList(List *list, int codigo);
 
+void SetFirstList(List *list, Cell *cell);
+
+void SetLastList(List *list, Cell *cell);
+
 void *GetFirstList(List *list);
 
 void *GetLastList(List *list);

@@ -42,8 +42,3 @@ void PrintRecommendation(void *ptr, int isLast)
         printf(", ");
     }
 }
-
-void FreeRecommendation(Recommendation *recommendation)
-{
-    free(recommendation);
-}
