@@ -199,16 +199,14 @@ void format_AddBookToRecommendedUser(COMMAND_PARAMS)
 void format_AcceptRecommendedBook(COMMAND_PARAMS)
 {
     BOTH_USERS_NOT_NULL(idUser1, idUser2)
-    UNIQUE_BOOK_NOT_NULL(idBook);
 
-    AcceptRecommendedBook(user1, book, user2);
+    AcceptRecommendedBook(user1, idBook, user2);
 }
 
 void format_DenyRecommendedBook(COMMAND_PARAMS)
 {
     User *recommendedUser = FindList(userList, idUser1);
     User *recommendindUser = FindList(userList, idUser2);
-    UNIQUE_BOOK_NOT_NULL(idBook);
 
     if (!recommendindUser)
     {
@@ -222,7 +220,7 @@ void format_DenyRecommendedBook(COMMAND_PARAMS)
         return;
     }
 
-    DenyRecommendedBook(recommendedUser, book, recommendindUser);
+    DenyRecommendedBook(recommendedUser, idBook, recommendindUser);
 }
 
 void format_PrintSharedBooksUsers(COMMAND_PARAMS)

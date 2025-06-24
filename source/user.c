@@ -232,39 +232,39 @@ void AddBookToRecommendedUser(User *user1, Book *book, User *user2)
     printf("%s não precisa da recomendação de \"%s\" pois já leu este livro\n", user2->name, GetTitleBook(book));
 }
 
-void AcceptRecommendedBook(User *user1, Book *book, User *user2)
+void AcceptRecommendedBook(User *user1, int idBook, User *user2)
 {
     assert(user1);
     assert(user2);
-    assert(book);
     Recommendation *recommendation = NULL;
 
-    if ((recommendation = FindRecommendation(user1, book, user2)))
+    if ((recommendation = FindRecommendation(user1, idBook, GetIdUser(user2))))
     {
+        Book *book = GetBookRecommendation(recommendation);
         printf("%s aceita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
         AppendList(user1->whishedBooks, book);
         RemoveRecommendation(user1, recommendation);
         return;
     }
 
-    printf("%s não possui recomendação do livro ID %d feita por %s\n", user1->name, GetIdBook(book), user2->name);
+    printf("%s não possui recomendação do livro ID %d feita por %s\n", user1->name, idBook, user2->name);
 }
 
-void DenyRecommendedBook(User *user1, Book *book, User *user2)
+void DenyRecommendedBook(User *user1, int idBook, User *user2)
 {
     assert(user1);
     assert(user2);
-    assert(book);
     Recommendation *recommendation = NULL;
 
-    if ((recommendation = FindRecommendation(user1, book, user2)))
+    if ((recommendation = FindRecommendation(user1, idBook, GetIdUser(user2))))
     {
+        Book *book = GetBookRecommendation(recommendation);
         printf("%s rejeita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
         RemoveRecommendation(user1, recommendation);
         return;
     }
 
-    printf("%s não possui recomendação do livro ID %d feita por %s\n", user1->name, GetIdBook(book), user2->name);
+    printf("%s não possui recomendação do livro ID %d feita por %s\n", user1->name, idBook, user2->name);
 }
 
 // corrigir depois
@@ -339,7 +339,7 @@ int AreRelatedUsers(User *user1, User *user2)
     return result;
 }
 
-Recommendation *FindRecommendation(User *user, Book *recommendedBook, User *recommendingUser)
+Recommendation *FindRecommendation(User *user, int idBook, int idRecommendingUser)
 {
     Cell *cur = GetFirstCellList(user->recommendations);
 
@@ -347,7 +347,7 @@ Recommendation *FindRecommendation(User *user, Book *recommendedBook, User *reco
     {
         Recommendation *val = GetValue(cur);
 
-        if (GetBookRecommendation(val) == recommendedBook && GetRecommendingUserRecommendation(val) == recommendingUser)
+        if (GetIdBook(GetBookRecommendation(val)) == idBook && GetIdUser(GetRecommendingUserRecommendation(val)) == idRecommendingUser)
             return GetValue(cur);
 
         cur = GetNext(cur);

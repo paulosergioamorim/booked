@@ -42,14 +42,14 @@ void AddBookToWishedUser(User *user1, Book *book);
 
 void AddBookToRecommendedUser(User *user1, Book *book, User *user2);
 
-void AcceptRecommendedBook(User *user1, Book *book, User *user2);
+void AcceptRecommendedBook(User *user1, int idBook, User *user2);
 
-void DenyRecommendedBook(User *user1, Book *book, User *user2);
+void DenyRecommendedBook(User *user1, int idBook, User *user2);
 
 void PrintSharedBooksUsers(User *user1, User *user2);
 
 int AreRelatedUsers(User *user1, User *user2);
 
-Recommendation *FindRecommendation(User *user, Book *recommendedBook, User *recommendingUser);
+Recommendation *FindRecommendation(User *user, int idBook, int idRecommendingUser);
 
 void RemoveRecommendation(User *user, Recommendation *recommendation);
