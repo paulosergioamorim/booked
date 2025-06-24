@@ -32,6 +32,7 @@ Cell *CreateCell(void *value)
 
 void *GetValue(Cell *cell)
 {
+    assert(cell);
     return cell->value;
 }
 
