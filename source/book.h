@@ -34,18 +34,7 @@ typedef struct book Book;
 */
 Book *CreateBook(int id, char *title, char *author, char *gender, int yearOfPublication);
 
-/**
- * @brief Compare the book's id with the given id
- * 
- * @param ptr pointer to the book object
- * @param id 
- * 
- * @pre the book exists
- * @post the book data remains unchanged
- * 
- * @return int - 1 if equal, 0 otherwise
- */
-int IsSameIdOfBook(void *ptr, int id);
+int CompareIdBook(void *book, va_list args);
 
 /**
  * @brief Read the data to alocate the book from the file
@@ -104,3 +93,5 @@ int GetIdBook(void *ptr);
  * @return int - 1 if equal, 0 otherwise
  */
 int CompareBooks(void *book1, void *book2);
+
+char *GetTitleBook(Book *book);

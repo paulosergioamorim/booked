@@ -24,7 +24,7 @@ for TEST in $TEST_CASES; do
     mkdir -p saidas
 
     echo "$TEST:"
-    valgrind --leak-check=full --log-file=saidas/valgrind.log ./../../$PROJ_NAME > saidas/minha_saida.txt
+    valgrind --leak-check=full --show-leak-kinds=all --log-file=saidas/valgrind.log ./../../$PROJ_NAME > saidas/minha_saida.txt
 
     echo -n "Output: "
     diff saidas/minha_saida.txt saida.txt > saidas/diff.log

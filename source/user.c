@@ -13,9 +13,11 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <stdarg.h>
 #include "user.h"
 #include "utils.h"
 #include "list.h"
+#include "recommendation.h"
 
 struct user
 {
@@ -25,7 +27,7 @@ struct user
     char **preferences;
     List *finishedBooks;
     List *whishedBooks;
-    List *recommendedBooks;
+    List *recommendations;
     List *afinities;
 };
 
@@ -39,10 +41,10 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
     user->name = strdup(name);
     user->lenPreferences = lenPreferences;
     user->preferences = preferences;
-    user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->whishedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->recommendedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->afinities = CreateList(PrintAfinity, IsSameIdOfUser);
+    user->finishedBooks = CreateList(PrintBook, CompareIdBook);
+    user->whishedBooks = CreateList(PrintBook, CompareIdBook);
+    user->recommendations = CreateList(PrintRecommendation, CompareIdRecommendation);
+    user->afinities = CreateList(PrintAfinity, CompareIdUser);
 
     return user;
 }
@@ -70,10 +72,11 @@ User *ReadUser(FILE *file)
     return CreateUser(id, name, lenPreferences, preferences);
 }
 
-int IsSameIdOfUser(void *ptr, int id)
+int CompareIdUser(void *ptr, va_list args)
 {
     User *user = (User *)ptr;
     assert(user);
+    int id = va_arg(args, int);
 
     return user->id == id;
 }
@@ -90,7 +93,7 @@ void PrintUser(void *ptr, int)
     PrintList(user->whishedBooks);
     printf("\n");
     printf("Recomendacoes: ");
-    PrintList(user->recommendedBooks);
+    PrintList(user->recommendations);
     printf("\n");
     printf("Afinidades: ");
     PrintList(user->afinities);
@@ -110,7 +113,8 @@ void FreeUser(void *ptr)
 
     FreeList(user->finishedBooks);
     FreeList(user->whishedBooks);
-    FreeList(user->recommendedBooks);
+    ForEach(user->recommendations, free);
+    FreeList(user->recommendations);
     FreeList(user->afinities);
 
     free(user);
@@ -123,10 +127,11 @@ int GetIdUser(void *ptr)
     return user->id;
 }
 
-char* GetNameUser(void *ptr) {
+char *GetNameUser(void *ptr)
+{
     assert(ptr);
 
-    return ((User*)ptr)->name;
+    return ((User *)ptr)->name;
 }
 
 int AreCompatibleUsers(User *user1, User *user2)
@@ -150,7 +155,8 @@ void ConnectUsers(void *ptr1, void *ptr2)
 {
     User *user1 = (User *)ptr1;
     User *user2 = (User *)ptr2;
-    assert(user1 && user2);
+    assert(user1);
+    assert(user2);
 
     if (AreCompatibleUsers(user1, user2))
     {
@@ -175,64 +181,119 @@ void PrintAfinity(void *ptr, int isLast)
  * TODO: IMPLEMENTAR FRASES DE LOG DAS FUNÇÕES ABAIXO
  */
 
-void AddBookToFinishedUser(User *user1, Book *book, User *user2)
+void AddBookToFinishedUser(User *user1, Book *book)
 {
-    assert(user1 && book);
-    AppendList(user1->finishedBooks, book);
+    assert(user1);
+    assert(book);
+
+    if (!FindList(user1->finishedBooks, GetIdBook(book)))
+    {
+        printf("%s leu \"%s\"\n", user1->name, GetTitleBook(book));
+        AppendList(user1->finishedBooks, book);
+        return;
+    }
+
+    printf("%s já leu \"%s\"\n", user1->name, GetTitleBook(book));
 }
 
-void AddBookToWishedUser(User *user1, Book *book, User *user2)
+void AddBookToWishedUser(User *user1, Book *book)
 {
-    assert(user1 && book);
-    AppendList(user1->whishedBooks, book);
+    assert(user1);
+    assert(book);
+
+    if (!FindList(user1->whishedBooks, GetIdBook(book)))
+    {
+        printf("%s deseja ler \"%s\"\n", user1->name, GetTitleBook(book));
+        AppendList(user1->whishedBooks, book);
+        return;
+    }
+
+    printf("%s já deseja ler \"%s\"\n", user1->name, GetTitleBook(book));
 }
 
 void AddBookToRecommendedUser(User *user1, Book *book, User *user2)
 {
-    assert(user1 && book);
+    assert(user1);
+    assert(user2);
+    assert(book);
 
-    if (!FindList(user1->finishedBooks, GetIdBook(book)))
+    if (FindList(user2->whishedBooks, GetIdBook(book)))
     {
-        AppendList(user1->recommendedBooks, book);
+        printf("%s já deseja ler \"%s\", recomendação desnecessária\n", user2->name, GetTitleBook(book));
+        return;
     }
+
+    if (!FindList(user2->finishedBooks, GetIdBook(book)))
+    {
+        printf("%s recomenda \"%s\" para %s\n", user1->name, GetTitleBook(book), user2->name);
+        Recommendation *recommendation = CreateRecommendation(book, user1);
+        AppendList(user2->recommendations, recommendation);
+        return;
+    }
+
+    printf("%s não precisa da recomendação de \"%s\" pois já leu este livro\n", user2->name, GetTitleBook(book));
 }
 
-void AcceptRecommendedBook(User *user1, Book *book, User *user2)
+void AcceptRecommendedBook(User *user1, int idBook, User *user2)
 {
-    assert(user1 && book);
-    AppendList(user1->whishedBooks, book);
-    RemoveList(user1->recommendedBooks, GetIdBook(book));
+    assert(user1);
+    assert(user2);
+    Recommendation *recommendation = NULL;
+
+    if ((recommendation = FindList(user1->recommendations, idBook, user2->id)))
+    {
+        Book *book = GetBookRecommendation(recommendation);
+        printf("%s aceita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
+        AppendList(user1->whishedBooks, book);
+        RemoveList(user1->recommendations, idBook, user2->id);
+        free(recommendation);
+        return;
+    }
+
+    printf("%s não possui recomendação do livro ID %d feita por %s\n", user1->name, idBook, user2->name);
 }
 
-void DenyRecommendedBook(User *user1, Book *book, User *user2)
+void DenyRecommendedBook(User *user1, int idBook, User *user2)
 {
-    assert(user2 && book);
-    RemoveList(user2->recommendedBooks, GetIdBook(book));
+    assert(user1);
+    assert(user2);
+    Recommendation *recommendation = NULL;
+
+    if ((recommendation = FindList(user1->recommendations, idBook, user2->id)))
+    {
+        Book *book = GetBookRecommendation(recommendation);
+        printf("%s rejeita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
+        RemoveList(user1->recommendations, idBook, user2->id);
+        free(recommendation);
+        return;
+    }
+
+    printf("%s não possui recomendação do livro ID %d feita por %s\n", user1->name, idBook, user2->name);
 }
 
-//corrigir depois
-void PrintSharedBooksUsers(User* user1, User* user2)
+// corrigir depois
+void PrintSharedBooksUsers(User *user1, User *user2)
 {
     assert(user1);
     assert(user2);
 
     printf("Livros em comum entre %s e %s: ", user1->name, user2->name);
-    
+
     // linha terrivelmente longa, desculpa.
-    List *sharedBooks = GetCommonItemsList(user1->finishedBooks, user2->finishedBooks, IsSameIdOfBook, PrintBook, CompareBooks);
+    List *sharedBooks = GetCommonItemsList(user1->finishedBooks, user2->finishedBooks, CompareIdBook, PrintBook, CompareBooks);
 
     if (IsEmptyList(sharedBooks))
         printf("Nenhum livro em comum");
     else
         PrintList(sharedBooks);
-    
+
     printf("\n");
 
     FreeList(sharedBooks);
 }
 
-int SearchUser(User* user, int id, List* visited)
-{   
+int SearchUser(User *user, int id, List *visited)
+{
     assert(user);
     assert(visited);
 
@@ -243,18 +304,18 @@ int SearchUser(User* user, int id, List* visited)
         return 0;
 
     AppendList(visited, user);
-    
+
     // Encontrou o usuário no nó atual.
-    if (IsSameIdOfUser(user, id))
+    if (user->id == id)
         return 1;
 
     // Inicia a busca nos filhos do nó atual:
-    Cell* currentCell = GetFirstCellList(user->afinities);
-    
+    Cell *currentCell = GetFirstCellList(user->afinities);
+
     // Loop que percorre os irmaos
     while (currentCell != NULL)
     {
-        User* currentUser = GetValue(currentCell);
+        User *currentUser = GetValue(currentCell);
 
         // Busca recursivamente até encontrar o usuário ou chegar ao fim do ramo.
         if (SearchUser(currentUser, id, visited))
@@ -264,16 +325,16 @@ int SearchUser(User* user, int id, List* visited)
         currentCell = GetNext(currentCell);
     }
     // Acabaram os nós irmãos
-    
+
     return 0;
 }
 
-int AreRelatedUsers(User* user1, User* user2)
+int AreRelatedUsers(User *user1, User *user2)
 {
     assert(user1);
     assert(user2);
 
-    List* visitedUsers = CreateList(PrintUser, IsSameIdOfUser);
+    List *visitedUsers = CreateList(PrintUser, CompareIdUser);
 
     int result = SearchUser(user1, user2->id, visitedUsers);
 

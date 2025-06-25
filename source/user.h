@@ -18,11 +18,13 @@
 
 typedef struct user User;
 
+#include "recommendation.h"
+
 User *CreateUser(int id, char *name, int lenPreferences, char **preferences);
 
 User *ReadUser(FILE *file);
 
-int IsSameIdOfUser(void *user, int id);
+int CompareIdUser(void *user, va_list args);
 
 void PrintUser(void *user, int);
 
@@ -30,20 +32,20 @@ void FreeUser(void *user);
 
 int GetIdUser(void *ptr);
 
-char* GetNameUser(void *ptr);
+char *GetNameUser(void *ptr);
 
 void ConnectUsers(void *ptr1, void *ptr2);
 
-void AddBookToFinishedUser(User *user1, Book *book, User *user2);
+void AddBookToFinishedUser(User *user1, Book *book);
 
-void AddBookToWishedUser(User *user1, Book *book, User *user2);
+void AddBookToWishedUser(User *user1, Book *book);
 
 void AddBookToRecommendedUser(User *user1, Book *book, User *user2);
 
-void AcceptRecommendedBook(User *user1, Book *book, User *user2);
+void AcceptRecommendedBook(User *user1, int idBook, User *user2);
 
-void DenyRecommendedBook(User *user1, Book *book, User *user2);
+void DenyRecommendedBook(User *user1, int idBook, User *user2);
 
-void PrintSharedBooksUsers(User* user1, User* user2);
+void PrintSharedBooksUsers(User *user1, User *user2);
 
-int AreRelatedUsers(User* user1, User* user2);
+int AreRelatedUsers(User *user1, User *user2);

@@ -13,6 +13,7 @@
 #include "cell.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <assert.h>
 
 struct list
@@ -27,21 +28,6 @@ int IsEmptyList(List *list)
 {
     assert(list);
     return !list->first;
-}
-
-int CountList(List *list) // Da pra adicionar o atributo "tamanho" na sentinela, muito custoso contar toda vez.
-{
-    assert(list);
-    int count = 0;
-    Cell *cur = list->first;
-
-    while (cur)
-    {
-        count++;
-        cur = GetNext(cur);
-    }
-
-    return count;
 }
 
 List *CreateList(print_fn print_fn, compare_key_fn compare_key_fn)
@@ -70,76 +56,37 @@ void AppendList(List *list, void *value)
     list->last = cell;
 }
 
-void PrependList(List *list, void *value)
+void RemoveList(List *list, ...)
 {
     assert(list);
-    Cell *cell = CreateCell(value);
-
-    if (IsEmptyList(list))
-    {
-        list->first = list->last = cell;
-        return;
-    }
-
-    SetNext(cell, list->first);
-    list->first = cell;
-}
-
-void InsertList(List *list, void *value, int index)
-{
-    assert(list);
-
-    if (index == 0)
-    {
-        PrependList(list, value);
-        return;
-    }
-
-    int count = CountList(list);
-
-    if (index >= count)
-    {
-        AppendList(list, value);
-        return;
-    }
 
     Cell *prev = NULL;
     Cell *cur = list->first;
-    Cell *newCell = CreateCell(value);
+    va_list keys_list;
+    va_start(keys_list, list);
 
-    for (int i = 0; i < index; i++)
+    while (cur)
     {
-        prev = cur;
-        cur = GetNext(cur);
-    }
+        va_list keys_copy;
 
-    SetNext(prev, newCell);
-    SetNext(newCell, cur);
-}
+        va_copy(keys_copy, keys_list);
 
-void RemoveList(List *list, int codigo)
-{
-    assert(list);
-
-    if (IsEmptyList(list))
-    {
-        return; // list is empty
-    }
-
-    Cell *prev = NULL;
-    Cell *cur = list->first;
-
-    while (1)
-    {
-        if (list->compare_key_fn(GetValue(cur), codigo))
+        if (list->compare_key_fn(GetValue(cur), keys_copy))
+        {
+            va_end(keys_copy);
+            va_end(keys_list);
             break;
+        }
 
-        if (IsLast(cur))
-            return; // not found element
-
+        va_end(keys_copy);
         prev = cur;
         cur = GetNext(cur);
     }
+
+    va_end(keys_list);
+
+    if (!cur)
+        return; // not found
 
     if (cur == list->first)
     {
@@ -160,23 +107,32 @@ void RemoveList(List *list, int codigo)
     FreeCell(cur); // middle element
 }
 
-void *FindList(List *list, int codigo)
+void *FindList(List *list, ...)
 {
     assert(list);
     Cell *cur = list->first;
+    va_list keys_list;
+    va_start(keys_list, list);
 
     while (cur)
     {
-        if (list->compare_key_fn(GetValue(cur), codigo))
-            break;
+        va_list keys_copy;
+        va_copy(keys_copy, keys_list);
 
+        if (list->compare_key_fn(GetValue(cur), keys_copy))
+        {
+            va_end(keys_copy);
+            va_end(keys_list);
+            return GetValue(cur);
+        }
+
+        va_end(keys_copy);
         cur = GetNext(cur);
     }
 
-    if (!cur)
-        return NULL;
+    va_end(keys_list);
 
-    return GetValue(cur);
+    return NULL;
 }
 
 void *GetFirstList(List *list)
@@ -191,24 +147,8 @@ void *GetLastList(List *list)
     return GetValue(list->last);
 }
 
-void *GetItemByIndexList(List *list, int index)
+Cell *GetFirstCellList(List *list)
 {
-    assert(list);
-
-    Cell *aux = list->first;
-
-    for (int i = 0; i < index && aux != NULL; i++)
-    {
-        aux = GetNext(aux);
-    }
-
-    if (aux != NULL)
-        return GetValue(aux);
-
-    return NULL;
-}
-
-Cell *GetFirstCellList(List* list) {
     assert(list);
 
     return list->first;
@@ -236,29 +176,17 @@ void FreeList(List *list)
 void ClearList(List *list)
 {
     assert(list);
+    Cell *prev = NULL;
     Cell *cur = list->first;
-    Cell *next = NULL;
 
     while (cur)
     {
-        next = GetNext(cur);
-        FreeCell(cur);
-        cur = next;
+        prev = cur;
+        cur = GetNext(cur);
+        FreeCell(prev);
     }
 
     list->first = NULL;
-}
-
-void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn)
-{
-    assert(list);
-
-    while (!IsEmptyList(list))
-    {
-        void *item = GetFirstList(list);
-        RemoveList(list, get_id_fn(item));
-        free_fn(item);
-    }
 }
 
 void IterList(List *list, iter_fn iter_fn)
@@ -282,8 +210,19 @@ void IterList(List *list, iter_fn iter_fn)
     }
 }
 
+void ForEach(List *list, for_each_fn for_each_fn)
+{
+    assert(list);
+    Cell *cur = list->first;
 
-List *GetCommonItemsList(List* list1, List *list2, compare_key_fn compareKey, print_fn print, compare_items_fn compareItems)
+    while (cur)
+    {
+        for_each_fn(GetValue(cur));
+        cur = GetNext(cur);
+    }
+}
+
+List *GetCommonItemsList(List *list1, List *list2, compare_key_fn compareKey, print_fn print, compare_items_fn compareItems)
 {
     assert(list1);
     assert(list2);

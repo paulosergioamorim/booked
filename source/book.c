@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <assert.h>
 #include <string.h>
 #include "book.h"
@@ -38,10 +39,11 @@ Book *CreateBook(int id, char *title, char *author, char *gender, int yearOfPubl
     return book;
 }
 
-int IsSameIdOfBook(void *ptr, int id)
+int CompareIdBook(void *ptr, va_list args)
 {
     Book *book = (Book *)ptr;
     assert(book);
+    int id = va_arg(args, int);
 
     return book->id == id;
 }
@@ -91,14 +93,20 @@ int GetIdBook(void *ptr)
     return book->id;
 }
 
-
 int CompareBooks(void *ptr1, void *ptr2)
 {
     assert(ptr1);
     assert(ptr2);
 
-    Book *book1 = (Book*)ptr1;
-    Book *book2 = (Book*)ptr2;
+    Book *book1 = (Book *)ptr1;
+    Book *book2 = (Book *)ptr2;
 
     return book1->id == book2->id;
+}
+
+char *GetTitleBook(Book *book)
+{
+    assert(book);
+
+    return book->title;
 }

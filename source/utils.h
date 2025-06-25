@@ -16,16 +16,14 @@
 
 FILE *OpenFileToRead(char *source);
 
-char *ReadLine();
-
 typedef void (*free_fn)(void *);
 
-typedef int (*compare_key_fn)(void *, int);
+typedef int (*compare_key_fn)(void *, va_list args);
 
-typedef int (*compare_items_fn)(void *, void*);
-
-typedef int (*get_id_fn)(void *);
+typedef int (*compare_items_fn)(void *, void *);
 
 typedef void (*print_fn)(void *, int);
+
+typedef void (*for_each_fn)(void *);
 
 typedef void (*iter_fn)(void *, void *);
