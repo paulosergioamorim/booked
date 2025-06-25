@@ -24,7 +24,8 @@ for TEST in $TEST_CASES; do
     mkdir -p saidas
 
     echo "$TEST:"
-    valgrind --leak-check=full --show-leak-kinds=all --log-file=saidas/valgrind.log ./../../$PROJ_NAME > saidas/minha_saida.txt
+    valgrind --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all --error-exitcode=2 --log-file=saidas/valgrind.log ./../../$PROJ_NAME > saidas/minha_saida.txt
+    VALGRIND_EXITCODE=$?
 
     echo -n "Output: "
     diff saidas/minha_saida.txt saida.txt > saidas/diff.log
@@ -36,12 +37,11 @@ for TEST in $TEST_CASES; do
     echo -e -n "${WHITE}"
     
     echo -n "Valgrind: "
-    grep -q "ERROR SUMMARY: 0 errors" saidas/valgrind.log
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}SEM VAZAMENTO DE MEMÓRIA!"
-    else
-        echo -e "${RED}COM VAZAMENTO DE MEMORIA!"
+    if [ ${VALGRIND_EXITCODE} -eq 2 ]; then
+        echo -e "${RED}VALGRIND IDENTIFICOU 1 OU MAIS ERROS!"
         echo "Cheque o arquivo saidas/valgrind.log"
+    else
+        echo -e "${GREEN}SEM ERROS ACUSADOS PELO VALGRIND!"
     fi
 
     echo -e -n "${WHITE}"
