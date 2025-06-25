@@ -173,7 +173,6 @@ void format_AddBookToRecommendedUser(COMMAND_PARAMS)
 
 void format_AcceptRecommendedBook(COMMAND_PARAMS)
 {
-<<<<<<< HEAD
     User *recommendedUser = FindList(userList, idUser1);
     User *recommendindUser = FindList(userList, idUser2);
 
@@ -189,10 +188,6 @@ void format_AcceptRecommendedBook(COMMAND_PARAMS)
         return;
     }
     AcceptRecommendedBook(recommendedUser, idBook, recommendindUser);
-=======
-    BOTH_USERS_NOT_NULL(idUser1, idUser2);
-    AcceptRecommendedBook(user1, idBook, user2);
->>>>>>> paulo
 }
 
 void format_DenyRecommendedBook(COMMAND_PARAMS)
