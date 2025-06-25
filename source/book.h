@@ -34,6 +34,17 @@ typedef struct book Book;
 */
 Book *CreateBook(int id, char *title, char *author, char *gender, int yearOfPublication);
 
+/**
+ * @brief Compare a Book object's ID with a given ID
+ * 
+ * @param book Pointer to the Book object
+ * @param args Variable argument list containing the ID to compare (in this case there must be only 1 argument (the id) in the list)
+ * 
+ * @pre book must be a valid pointer to a Book object; args must contain an int ID
+ * @post none
+ * 
+ * @return int 1 if the IDs match, 0 otherwise
+ */
 int CompareIdBook(void *book, va_list args);
 
 /**
@@ -90,8 +101,18 @@ int GetIdBook(void *ptr);
  * @pre both book exists
  * @post the books data remain unchanged
  * 
- * @return int - 1 if equal, 0 otherwise
+ * @return int 1 if equal, 0 otherwise
  */
 int CompareBooks(void *book1, void *book2);
 
+/**
+ * @brief Retrieve the title of a Book object
+ * 
+ * @param book Pointer to the Book object
+ * 
+ * @pre book must be a valid, initialized Book pointer
+ * @post none
+ * 
+ * @return char* - the title of the Book
+ */
 char *GetTitleBook(Book *book);
