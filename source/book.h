@@ -17,7 +17,7 @@ typedef struct book Book;
 
 Book *CreateBook(int id, char *title, char *author, char *gender, int yearOfPublication);
 
-int IsSameIdOfBook(void *book, int id);
+int CompareIdBook(void *book, va_list args);
 
 Book *ReadBook(FILE *file);
 

@@ -10,7 +10,7 @@ OBJ=$(subst .c,.o,$(subst source,obj,$(C_SOURCE))) #Pega o grupo dos arquivos.c
 
 COMPILER=gcc #Compilador usado
 
-BUILD_FLAGS=-c -Wall #Flags para a compilação (dependendo do caso pode ser util adicionar -g aqui)
+BUILD_FLAGS=-c -Wall -g#Flags para a compilação (dependendo do caso pode ser util adicionar -g aqui)
 
 RM=rm -rf #Comando de remoção de arquivos que será usado na regra "clean"
 
