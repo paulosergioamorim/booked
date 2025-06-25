@@ -6,25 +6,25 @@
 
 #define COMMAND_SOURCE_FILE "./comandos.txt"
 #define COMMAND_PARAMS List *userList, List *bookList, int idUser1, int idBook, int idUser2
-#define __UNIQUE_NOT_NULL(type, val, list, id)                 \
-    type val = FindList(list, id);                             \
-    if (!val)                                                  \
-    {                                                          \
-        printf("Erro: Leitor com ID %d não encontrado\n", id); \
-        return;                                                \
+#define __UNIQUE_NOT_NULL(type, var, name, list, id)             \
+    type var = FindList(list, id);                               \
+    if (!var)                                                    \
+    {                                                            \
+        printf("Erro: %s com ID %d não encontrado\n", name, id); \
+        return;                                                  \
     }
-#define UNIQUE_USER_NOT_NULL(id) __UNIQUE_NOT_NULL(User *, user, userList, id)
-#define BOTH_USERS_NOT_NULL(id1, id2)               \
-    __UNIQUE_NOT_NULL(User *, user1, userList, id1) \
-    __UNIQUE_NOT_NULL(User *, user2, userList, id2)
-#define UNIQUE_BOOK_NOT_NULL(id) __UNIQUE_NOT_NULL(Book *, book, bookList, id)
+#define UNIQUE_USER_NOT_NULL(id) __UNIQUE_NOT_NULL(User *, user, "Leitor", userList, id)
+#define BOTH_USERS_NOT_NULL(id1, id2)                         \
+    __UNIQUE_NOT_NULL(User *, user1, "Leitor", userList, id1) \
+    __UNIQUE_NOT_NULL(User *, user2, "Leitor", userList, id2)
+#define UNIQUE_BOOK_NOT_NULL(id) __UNIQUE_NOT_NULL(Book *, book, "Livro", bookList, id)
 #define __READ_FILE(type, func, file, list) \
     while (1)                               \
     {                                       \
-        type val = func(file);              \
-        if (!val)                           \
+        type var = func(file);              \
+        if (!var)                           \
             break;                          \
-        AppendList(list, val);              \
+        AppendList(list, var);              \
     }                                       \
     fclose(file);
 #define READ_BOOK_AND_USER_FILES                      \
@@ -173,7 +173,7 @@ void format_AddBookToRecommendedUser(COMMAND_PARAMS)
 
 void format_AcceptRecommendedBook(COMMAND_PARAMS)
 {
-    BOTH_USERS_NOT_NULL(idUser1, idUser2)
+    BOTH_USERS_NOT_NULL(idUser1, idUser2);
     AcceptRecommendedBook(user1, idBook, user2);
 }
 
