@@ -1,3 +1,14 @@
+/**
+ * @file recommendation.c
+ * @author Paulo Sergio Amorim, Vitor S. Passamani (@paulosergioamorim, vitor.spassamani@gmail.com)
+ * @brief Implementation file for functions that manipulate recommendation.
+ * @version 0.1
+ * @date 2025-06-25
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>

@@ -20,12 +20,3 @@ FILE *OpenFileToRead(char *source)
 
     return fp;
 }
-
-char *ReadLine()
-{
-    char *buffer = malloc(MAX_LINE_LENGTH * sizeof(char));
-    assert(buffer);
-    scanf(" %[^\n]%*c", buffer);
-
-    return buffer;
-}

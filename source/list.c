@@ -29,21 +29,6 @@ int IsEmptyList(List *list)
     return !list->first;
 }
 
-int CountList(List *list) // Da pra adicionar o atributo "tamanho" na sentinela, muito custoso contar toda vez.
-{
-    assert(list);
-    int count = 0;
-    Cell *cur = list->first;
-
-    while (cur)
-    {
-        count++;
-        cur = GetNext(cur);
-    }
-
-    return count;
-}
-
 List *CreateList(print_fn print_fn, compare_key_fn compare_key_fn)
 {
     List *list = malloc(sizeof(List));
@@ -68,53 +53,6 @@ void AppendList(List *list, void *value)
 
     SetNext(list->last, cell);
     list->last = cell;
-}
-
-void PrependList(List *list, void *value)
-{
-    assert(list);
-    Cell *cell = CreateCell(value);
-
-    if (IsEmptyList(list))
-    {
-        list->first = list->last = cell;
-        return;
-    }
-
-    SetNext(cell, list->first);
-    list->first = cell;
-}
-
-void InsertList(List *list, void *value, int index)
-{
-    assert(list);
-
-    if (index == 0)
-    {
-        PrependList(list, value);
-        return;
-    }
-
-    int count = CountList(list);
-
-    if (index >= count)
-    {
-        AppendList(list, value);
-        return;
-    }
-
-    Cell *prev = NULL;
-    Cell *cur = list->first;
-    Cell *newCell = CreateCell(value);
-
-    for (int i = 0; i < index; i++)
-    {
-        prev = cur;
-        cur = GetNext(cur);
-    }
-
-    SetNext(prev, newCell);
-    SetNext(newCell, cur);
 }
 
 void RemoveList(List *list, int codigo)
@@ -186,23 +124,6 @@ void *GetLastList(List *list)
     return GetValue(list->last);
 }
 
-void *GetItemByIndexList(List *list, int index)
-{
-    assert(list);
-
-    Cell *aux = list->first;
-
-    for (int i = 0; i < index && aux != NULL; i++)
-    {
-        aux = GetNext(aux);
-    }
-
-    if (aux != NULL)
-        return GetValue(aux);
-
-    return NULL;
-}
-
 void SetFirstList(List *list, Cell *cell)
 {
     list->first = cell;
@@ -253,18 +174,6 @@ void ClearList(List *list)
     }
 
     list->first = NULL;
-}
-
-void DestroyItemsList(List *list, get_id_fn get_id_fn, free_fn free_fn)
-{
-    assert(list);
-
-    while (!IsEmptyList(list))
-    {
-        void *item = GetFirstList(list);
-        RemoveList(list, get_id_fn(item));
-        free_fn(item);
-    }
 }
 
 void IterList(List *list, iter_fn iter_fn)
