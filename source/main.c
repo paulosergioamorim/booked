@@ -17,7 +17,15 @@
 #define BOTH_USERS_NOT_NULL(id1, id2)               \
     __UNIQUE_NOT_NULL(User *, user1, userList, id1) \
     __UNIQUE_NOT_NULL(User *, user2, userList, id2)
-#define UNIQUE_BOOK_NOT_NULL(id) __UNIQUE_NOT_NULL(Book *, book, bookList, id)
+
+//modificação temporária só pra testar os logs:
+#define UNIQUE_BOOK_NOT_NULL(id)                                \
+    Book * book = FindList(bookList, id);                       \
+    if (!book)                                                  \
+    {                                                           \
+        printf("Erro: Livro com ID %d não encontrado\n", id);   \
+        return;                                                 \
+    }
 #define __READ_FILE(type, func, file, list) \
     while (1)                               \
     {                                       \
@@ -158,7 +166,7 @@ void format_AddBookToRecommendedUser(COMMAND_PARAMS)
 
     if (!recommendedUser)
     {
-        printf("Erro: Leitor destinatário com ID %d não encontrado\n", idUser2);
+        printf("Erro: Leitor destinatário com ID %d não encontrado\n", idUser2); //a mensagem com "destinatario" só aparece aqui.
         return;
     }
 
@@ -173,8 +181,21 @@ void format_AddBookToRecommendedUser(COMMAND_PARAMS)
 
 void format_AcceptRecommendedBook(COMMAND_PARAMS)
 {
-    BOTH_USERS_NOT_NULL(idUser1, idUser2)
-    AcceptRecommendedBook(user1, idBook, user2);
+    User *recommendedUser = FindList(userList, idUser1);
+    User *recommendindUser = FindList(userList, idUser2);
+
+    if (!recommendindUser)
+    {
+        printf("Erro: Leitor recomendador com ID %d não encontrado\n", idUser2);
+        return;
+    }
+
+    if (!recommendedUser)
+    {
+        printf("Erro: Leitor com ID %d não encontrado\n", idUser1); //??? tava dando erro no gabarito
+        return;
+    }
+    AcceptRecommendedBook(recommendedUser, idBook, recommendindUser);
 }
 
 void format_DenyRecommendedBook(COMMAND_PARAMS)
@@ -190,7 +211,7 @@ void format_DenyRecommendedBook(COMMAND_PARAMS)
 
     if (!recommendedUser)
     {
-        printf("Erro: Leitor destinatário com ID %d não encontrado\n", idUser1);
+        printf("Erro: Leitor com ID %d não encontrado\n", idUser1); //??? tava dando erro no gabarito
         return;
     }
 
