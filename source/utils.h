@@ -18,7 +18,7 @@ FILE *OpenFileToRead(char *source);
 
 typedef void (*free_fn)(void *);
 
-typedef int (*compare_key_fn)(void *, int);
+typedef int (*compare_key_fn)(void *, va_list args);
 
 typedef int (*compare_items_fn)(void *, void *);
 

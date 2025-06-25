@@ -13,6 +13,7 @@
 #include "cell.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <assert.h>
 
 struct list
@@ -55,21 +56,34 @@ void AppendList(List *list, void *value)
     list->last = cell;
 }
 
-void RemoveList(List *list, int codigo)
+void RemoveList(List *list, ...)
 {
     assert(list);
 
     Cell *prev = NULL;
     Cell *cur = list->first;
+    va_list keys_list;
+    va_start(keys_list, list);
 
     while (cur)
     {
-        if (list->compare_key_fn(GetValue(cur), codigo))
-            break;
+        va_list keys_copy;
 
+        va_copy(keys_copy, keys_list);
+
+        if (list->compare_key_fn(GetValue(cur), keys_copy))
+        {
+            va_end(keys_copy);
+            va_end(keys_list);
+            break;
+        }
+
+        va_end(keys_copy);
         prev = cur;
         cur = GetNext(cur);
     }
+
+    va_end(keys_list);
 
     if (!cur)
         return; // not found
@@ -93,23 +107,32 @@ void RemoveList(List *list, int codigo)
     FreeCell(cur); // middle element
 }
 
-void *FindList(List *list, int codigo)
+void *FindList(List *list, ...)
 {
     assert(list);
     Cell *cur = list->first;
+    va_list keys_list;
+    va_start(keys_list, list);
 
     while (cur)
     {
-        if (list->compare_key_fn(GetValue(cur), codigo))
-            break;
+        va_list keys_copy;
+        va_copy(keys_copy, keys_list);
 
+        if (list->compare_key_fn(GetValue(cur), keys_copy))
+        {
+            va_end(keys_copy);
+            va_end(keys_list);
+            return GetValue(cur);
+        }
+
+        va_end(keys_copy);
         cur = GetNext(cur);
     }
 
-    if (!cur)
-        return NULL;
+    va_end(keys_list);
 
-    return GetValue(cur);
+    return NULL;
 }
 
 void *GetFirstList(List *list)
@@ -122,16 +145,6 @@ void *GetLastList(List *list)
 {
     assert(list);
     return GetValue(list->last);
-}
-
-void SetFirstList(List *list, Cell *cell)
-{
-    list->first = cell;
-}
-
-void SetLastList(List *list, Cell *cell)
-{
-    list->last = cell;
 }
 
 Cell *GetFirstCellList(List *list)
@@ -163,14 +176,14 @@ void FreeList(List *list)
 void ClearList(List *list)
 {
     assert(list);
+    Cell *prev = NULL;
     Cell *cur = list->first;
-    Cell *next = NULL;
 
     while (cur)
     {
-        next = GetNext(cur);
-        FreeCell(cur);
-        cur = next;
+        prev = cur;
+        cur = GetNext(cur);
+        FreeCell(prev);
     }
 
     list->first = NULL;

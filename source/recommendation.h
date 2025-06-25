@@ -23,3 +23,5 @@ Book *GetBookRecommendation(Recommendation *recommendation);
 User *GetRecommendingUserRecommendation(Recommendation *recommendation);
 
 void PrintRecommendation(void *ptr, int isLast);
+
+int CompareIdRecommendation(void *ptr, va_list args);

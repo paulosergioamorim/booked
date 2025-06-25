@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <stdarg.h>
 #include "user.h"
 #include "utils.h"
 #include "list.h"
@@ -40,10 +41,10 @@ User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
     user->name = strdup(name);
     user->lenPreferences = lenPreferences;
     user->preferences = preferences;
-    user->finishedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->whishedBooks = CreateList(PrintBook, IsSameIdOfBook);
-    user->recommendations = CreateList(PrintRecommendation, NULL);
-    user->afinities = CreateList(PrintAfinity, IsSameIdOfUser);
+    user->finishedBooks = CreateList(PrintBook, CompareIdBook);
+    user->whishedBooks = CreateList(PrintBook, CompareIdBook);
+    user->recommendations = CreateList(PrintRecommendation, CompareIdRecommendation);
+    user->afinities = CreateList(PrintAfinity, CompareIdUser);
 
     return user;
 }
@@ -71,10 +72,11 @@ User *ReadUser(FILE *file)
     return CreateUser(id, name, lenPreferences, preferences);
 }
 
-int IsSameIdOfUser(void *ptr, int id)
+int CompareIdUser(void *ptr, va_list args)
 {
     User *user = (User *)ptr;
     assert(user);
+    int id = va_arg(args, int);
 
     return user->id == id;
 }
@@ -238,12 +240,13 @@ void AcceptRecommendedBook(User *user1, int idBook, User *user2)
     assert(user2);
     Recommendation *recommendation = NULL;
 
-    if ((recommendation = FindRecommendation(user1, idBook, GetIdUser(user2))))
+    if ((recommendation = FindList(user1->recommendations, idBook, user2->id)))
     {
         Book *book = GetBookRecommendation(recommendation);
         printf("%s aceita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
         AppendList(user1->whishedBooks, book);
-        RemoveRecommendation(user1, recommendation);
+        RemoveList(user1->recommendations, idBook, user2->id);
+        free(recommendation);
         return;
     }
 
@@ -256,11 +259,12 @@ void DenyRecommendedBook(User *user1, int idBook, User *user2)
     assert(user2);
     Recommendation *recommendation = NULL;
 
-    if ((recommendation = FindRecommendation(user1, idBook, GetIdUser(user2))))
+    if ((recommendation = FindList(user1->recommendations, idBook, user2->id)))
     {
         Book *book = GetBookRecommendation(recommendation);
         printf("%s rejeita recomendação \"%s\" de %s\n", user1->name, GetTitleBook(book), user2->name);
-        RemoveRecommendation(user1, recommendation);
+        RemoveList(user1->recommendations, idBook, user2->id);
+        free(recommendation);
         return;
     }
 
@@ -276,7 +280,7 @@ void PrintSharedBooksUsers(User *user1, User *user2)
     printf("Livros em comum entre %s e %s: ", user1->name, user2->name);
 
     // linha terrivelmente longa, desculpa.
-    List *sharedBooks = GetCommonItemsList(user1->finishedBooks, user2->finishedBooks, IsSameIdOfBook, PrintBook, CompareBooks);
+    List *sharedBooks = GetCommonItemsList(user1->finishedBooks, user2->finishedBooks, CompareIdBook, PrintBook, CompareBooks);
 
     if (IsEmptyList(sharedBooks))
         printf("Nenhum livro em comum");
@@ -302,7 +306,7 @@ int SearchUser(User *user, int id, List *visited)
     AppendList(visited, user);
 
     // Encontrou o usuário no nó atual.
-    if (IsSameIdOfUser(user, id))
+    if (user->id == id)
         return 1;
 
     // Inicia a busca nos filhos do nó atual:
@@ -330,74 +334,11 @@ int AreRelatedUsers(User *user1, User *user2)
     assert(user1);
     assert(user2);
 
-    List *visitedUsers = CreateList(PrintUser, IsSameIdOfUser);
+    List *visitedUsers = CreateList(PrintUser, CompareIdUser);
 
     int result = SearchUser(user1, user2->id, visitedUsers);
 
     FreeList(visitedUsers);
 
     return result;
-}
-
-Recommendation *FindRecommendation(User *user, int idBook, int idRecommendingUser)
-{
-    Cell *cur = GetFirstCellList(user->recommendations);
-
-    while (cur)
-    {
-        Recommendation *val = GetValue(cur);
-
-        if (GetIdBook(GetBookRecommendation(val)) == idBook && GetIdUser(GetRecommendingUserRecommendation(val)) == idRecommendingUser)
-            return GetValue(cur);
-
-        cur = GetNext(cur);
-    }
-
-    return NULL;
-}
-
-void RemoveRecommendation(User *user, Recommendation *recommendation)
-{
-    List *list = user->recommendations;
-    Cell *first = GetFirstCellList(list);
-    Cell *last = GetLastList(list);
-    Cell *prev = NULL;
-    Cell *cur = first;
-    Recommendation *value = NULL;
-
-    while (cur)
-    {
-        value = GetValue(cur);
-
-        if (value == recommendation)
-            break;
-
-        prev = cur;
-        cur = GetNext(cur);
-    }
-
-    if (!cur)
-        return;
-
-    if (cur == first)
-    {
-        SetFirstList(list, GetNext(first));
-        free(value);
-        FreeCell(cur);
-        return;
-    }
-
-    if (cur == last)
-    {
-        SetLastList(list, prev);
-        SetNext(prev, NULL);
-        free(value);
-        FreeCell(cur);
-        return;
-    }
-
-    SetNext(prev, GetNext(cur));
-    free(value);
-    FreeCell(cur);
-    return;
 }

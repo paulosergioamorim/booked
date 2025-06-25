@@ -22,13 +22,9 @@ int IsEmptyList(List *list);
 
 void AppendList(List *list, void *value);
 
-void RemoveList(List *list, int codigo);
+void RemoveList(List *list, ...);
 
-void *FindList(List *list, int codigo);
-
-void SetFirstList(List *list, Cell *cell);
-
-void SetLastList(List *list, Cell *cell);
+void *FindList(List *list, ...);
 
 void *GetFirstList(List *list);
 

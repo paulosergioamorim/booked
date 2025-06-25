@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdarg.h>
 #include "recommendation.h"
 
 struct recommendation
@@ -52,4 +53,14 @@ void PrintRecommendation(void *ptr, int isLast)
     {
         printf(", ");
     }
+}
+
+int CompareIdRecommendation(void *ptr, va_list args)
+{
+    Recommendation *recommendation = (Recommendation *)ptr;
+    assert(recommendation);
+    int idBook = va_arg(args, int);
+    int idUser = va_arg(args, int);
+
+    return GetIdBook(recommendation->book) == idBook && GetIdUser(recommendation->recommendingUser) == idUser;
 }

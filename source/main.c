@@ -6,33 +6,30 @@
 
 #define COMMAND_SOURCE_FILE "./comandos.txt"
 #define COMMAND_PARAMS List *userList, List *bookList, int idUser1, int idBook, int idUser2
-#define UNIQUE_USER_NOT_NULL(id)                               \
-    User *user = FindList(userList, id);                       \
-    if (!user)                                                 \
+#define __UNIQUE_NOT_NULL(type, val, list, id)                 \
+    type val = FindList(list, id);                             \
+    if (!val)                                                  \
     {                                                          \
         printf("Erro: Leitor com ID %d não encontrado\n", id); \
         return;                                                \
     }
-#define BOTH_USERS_NOT_NULL(idUser1, idUser2)                       \
-    User *user1 = FindList(userList, idUser1);                      \
-    User *user2 = FindList(userList, idUser2);                      \
-    if (!user1)                                                     \
-    {                                                               \
-        printf("Erro: Leitor com ID %d não encontrado\n", idUser1); \
-        return;                                                     \
-    }                                                               \
-    if (!user2)                                                     \
-    {                                                               \
-        printf("Erro: Leitor com ID %d não encontrado\n", idUser2); \
-        return;                                                     \
-    }
-#define UNIQUE_BOOK_NOT_NULL(id)                              \
-    Book *book = FindList(bookList, id);                      \
-    if (!book)                                                \
-    {                                                         \
-        printf("Erro: Livro com ID %d não encontrado\n", id); \
-        return;                                               \
-    }
+#define UNIQUE_USER_NOT_NULL(id) __UNIQUE_NOT_NULL(User *, user, userList, id)
+#define BOTH_USERS_NOT_NULL(id1, id2)               \
+    __UNIQUE_NOT_NULL(User *, user1, userList, id1) \
+    __UNIQUE_NOT_NULL(User *, user2, userList, id2)
+#define UNIQUE_BOOK_NOT_NULL(id) __UNIQUE_NOT_NULL(Book *, book, bookList, id)
+#define __READ_FILE(type, func, file, list) \
+    while (1)                               \
+    {                                       \
+        type val = func(file);              \
+        if (!val)                           \
+            break;                          \
+        AppendList(list, val);              \
+    }                                       \
+    fclose(file);
+#define READ_BOOK_AND_USER_FILES                      \
+    __READ_FILE(Book *, ReadBook, bookFile, bookList) \
+    __READ_FILE(User *, ReadUser, userFile, userList)
 
 typedef void (*command_fn)(COMMAND_PARAMS);
 
@@ -56,8 +53,8 @@ void format_PrintUsers(COMMAND_PARAMS);
 
 int main(int argc, char const *argv[])
 {
-    List *bookList = CreateList(PrintBook, IsSameIdOfBook);
-    List *userList = CreateList(PrintUser, IsSameIdOfUser);
+    List *bookList = CreateList(PrintBook, CompareIdBook);
+    List *userList = CreateList(PrintUser, CompareIdUser);
 
     FILE *bookFile = NULL;
     if ((bookFile = OpenFileToRead(BOOK_SOURCE_FILE)) == NULL)
@@ -96,36 +93,14 @@ int main(int argc, char const *argv[])
     fscanf(commandFile, "%*[^\n]\n");
     fscanf(userFile, "%*[^\n]\n");
 
-    while (1)
-    {
-        Book *book = ReadBook(bookFile);
-
-        if (!book)
-            break;
-
-        AppendList(bookList, book);
-    }
-
-    fclose(bookFile);
-
-    while (1)
-    {
-        User *user = ReadUser(userFile);
-
-        if (!user)
-            break;
-
-        AppendList(userList, user);
-    }
+    READ_BOOK_AND_USER_FILES;
 
     IterList(userList, ConnectUsers);
 
     while (ExecuteCommand(commandFile, commands, userList, bookList))
-    {
-    }
+        ;
 
     fclose(commandFile);
-    fclose(userFile);
 
     ForEach(bookList, FreeBook);
     ForEach(userList, FreeUser);
@@ -199,7 +174,6 @@ void format_AddBookToRecommendedUser(COMMAND_PARAMS)
 void format_AcceptRecommendedBook(COMMAND_PARAMS)
 {
     BOTH_USERS_NOT_NULL(idUser1, idUser2)
-
     AcceptRecommendedBook(user1, idBook, user2);
 }
 
@@ -234,11 +208,9 @@ void format_AreRelatedUsers(COMMAND_PARAMS)
     BOTH_USERS_NOT_NULL(idUser1, idUser2);
 
     if (AreRelatedUsers(user1, user2))
-        printf("Existe ");
+        printf("Existe afinidade entre %s e %s\n", GetNameUser(user1), GetNameUser(user2));
     else
-        printf("Não existe ");
-
-    printf("afinidade entre %s e %s\n", GetNameUser(user1), GetNameUser(user2));
+        printf("Não existe afinidade entre %s e %s\n", GetNameUser(user1), GetNameUser(user2));
 }
 
 void format_PrintUsers(COMMAND_PARAMS)
