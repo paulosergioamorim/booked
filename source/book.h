@@ -11,10 +11,19 @@
 
 #pragma once
 
+/**
+ * @def BOOK_SOURCE_FILE
+ * @brief Caminho padrão para o arquivo de livros.
+ *
+ * Usado em main.c para abrir o arquivo de livros:
+ * @code
+ * FILE *bookF = OpenFileToRead(BOOK_SOURCE_FILE);
+ * @endcode
+ */
 #define BOOK_SOURCE_FILE "./livros.txt"
 
 /**
- * @brief struct that defines a book.
+ * @brief Tipo opaco que representa um livro.
  */
 typedef struct book Book;
 
@@ -35,84 +44,58 @@ typedef struct book Book;
 Book *CreateBook(int id, char *title, char *author, char *gender, int yearOfPublication);
 
 /**
- * @brief Compare a Book object's ID with a given ID
- * 
- * @param book Pointer to the Book object
- * @param args Variable argument list containing the ID to compare (in this case there must be only 1 argument (the id) in the list)
- * 
- * @pre book must be a valid pointer to a Book object; args must contain an int ID
- * @post none
- * 
- * @return int 1 if the IDs match, 0 otherwise
+ * @brief Compara o ID de um livro com uma chave passada via va_list.
+ *
+ * @param book Ponteiro para Book.
+ * @param args va_list contendo um inteiro representando o ID.
+ * @return !=0 se o ID coincidir, 0 caso contrário.
  */
 int CompareIdBook(void *book, va_list args);
 
 /**
- * @brief Read the data to alocate the book from the file
- * 
- * @param file file with the data
+ * @brief Lê um livro de um arquivo de texto.
  *
- * @pre the file exists and is pointing to a line containing the correct data 
- * @post the book object is alocated and initialized
- * 
- * @return Book* - the initialized book object
+ * @param file Ponteiro para arquivo FILE aberto em modo leitura.
+ * @return Ponteiro para Book lido, ou NULL se EOF.
  */
 Book *ReadBook(FILE *file);
 
 /**
- * @brief Frees the alocated memory
- * 
- * @param book 
- * 
- * @pre the book exists
- * @post the alocated memory (book, title, author, gender) is freed
+ * @brief Libera a memória associada a um Book.
+ *
+ * @param book Ponteiro para Book a ser liberado.
  */
 void FreeBook(void *book);
 
 /**
- * @brief Print the formated book data;
- * 
- * @param book 
- * @param isLast indicates whether it is the last in the list
- * 
- * @pre the book exists
- * @post the book data remains unchanged
+ * @brief Imprime as informações de um livro.
+ *
+ * @param book   Ponteiro para Book.
+ * @param indent Nível de indentação (em espaços) para impressão formatada.
  */
-void PrintBook(void *book, int);
+void PrintBook(void *book, int indent);
 
 /**
- * @brief Get the Id of the Book object
- * 
- * @param ptr pointer to the book object
-
- * @pre the book exists
- * @post the book data remains unchanged
- * 
- * @return int - the book id
+ * @brief Obtém o ID de um livro.
+ *
+ * @param ptr Ponteiro genérico para Book.
+ * @return ID do livro.
  */
 int GetIdBook(void *ptr);
 
 /**
- * @brief check if two books are the same
- * 
- * @param book1 
- * @param book2 
- * 
- * @pre both book exists
- * @post the books data remain unchanged
- * 
- * @return int 1 if equal, 0 otherwise
+ * @brief Compara dois livros pelo ID.
+ *
+ * @param book1 Ponteiro para o primeiro Book.
+ * @param book2 Ponteiro para o segundo Book.
+ * @return !=0 se os IDs coincidirem, 0 caso contrário.
  */
 int CompareBooks(void *book1, void *book2);
 
 /**
- * @brief Retrieve the title of a Book object
- * 
- * @param book Pointer to the Book object
- * 
- * @pre book must be a valid, initialized Book pointer
- * @post none
- * 
- * @return char* - the title of the Book
+ * @brief Obtém o título de um livro.
+ *
+ * @param book Ponteiro para Book.
+ * @return Ponteiro para string contendo o título.
  */
 char *GetTitleBook(Book *book);

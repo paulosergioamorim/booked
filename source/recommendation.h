@@ -11,75 +11,51 @@
 
 #pragma once
 #include "book.h"
-
-/**
- * @brief Opaque definition for the Recommendation structure
- */
-typedef struct recommendation Recommendation;
-
 #include "user.h"
 
 /**
- * @brief Create a Recommendation object
- * 
- * @param book Pointer to the Book being recommended
- * @param recommendingUser Pointer to the User who is recommending the book
- * 
- * @pre book and recommendingUser must be valid, initialized pointers
- * @post Recommendation allocated and initialized with the given Book and User
- * 
- * @return Recommendation* - the initialized Recommendation object
+ * @brief Tipo opaco que representa uma recomendação de livro.
+ */
+typedef struct recommendation Recommendation;
+
+/**
+ * @brief Cria uma nova recomendação.
+ *
+ * @param book             Ponteiro para o livro recomendado.
+ * @param recommendingUser Ponteiro para o usuário que fez a recomendação.
+ * @return Ponteiro para a Recommendation criada.
  */
 Recommendation *CreateRecommendation(Book *book, User *recommendingUser);
 
 /**
- * @brief Retrieve the Book from a Recommendation
- * 
- * @param recommendation Pointer to the Recommendation object
- * 
- * @pre recommendation must be a valid, initialized Recommendation pointer
- * @post none
- * 
- * @return Book* - pointer to the recommended Book
+ * @brief Obtém o livro associado a uma recomendação.
+ *
+ * @param recommendation Ponteiro para Recommendation.
+ * @return Ponteiro para o Book recomendado.
  */
 Book *GetBookRecommendation(Recommendation *recommendation);
 
 /**
- * @brief Retrieve the User who made the Recommendation
- * 
- * @param recommendation Pointer to the Recommendation object
- * 
- * @pre recommendation must be a valid, initialized Recommendation pointer
- * @post none
- * 
- * @return User* - pointer to the User who recommended the Book
+ * @brief Obtém o usuário que fez a recomendação.
+ *
+ * @param recommendation Ponteiro para Recommendation.
+ * @return Ponteiro para o User recomendador.
  */
 User *GetRecommendingUserRecommendation(Recommendation *recommendation);
 
 /**
- * @brief Print the title of the Book in a Recommendation
- * 
- * @param ptr Pointer to a Recommendation object (as void*)
- * @param isLast Integer flag indicating if this is the last element to be printed
- * 
- * @pre ptr must be a valid pointer to a Recommendation object
- * @post The title of the recommended Book is printed to stdout; 
- *       if isLast is 0, a comma and space are printed after the title
- * 
- * @return void
+ * @brief Imprime uma recomendação formatada.
+ *
+ * @param ptr    Ponteiro para Recommendation.
+ * @param isLast Indicador se é o último item na lista (para ajustar formatação).
  */
 void PrintRecommendation(void *ptr, int isLast);
 
 /**
- * @brief Compare the Book and User IDs in a Recommendation
- * 
- * @param ptr Pointer to a Recommendation object (as void*)
- * @param args Variable argument list containing the Book ID and User ID
- * 
- * @pre ptr must be a valid pointer to a Recommendation object; 
- *      args must contain two integers: the Book ID and the User ID
- * @post none
- * 
- * @return int 1 if both IDs match the Recommendation, 0 otherwise
+ * @brief Compara uma recomendação por ID do livro.
+ *
+ * @param ptr  Ponteiro para Recommendation.
+ * @param args va_list contendo o ID do livro e o ID do usuário a comparar.
+ * @return !=0 se o ID coincidir, 0 caso contrário.
  */
 int CompareIdRecommendation(void *ptr, va_list args);

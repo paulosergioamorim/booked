@@ -14,226 +14,172 @@
 #include "book.h"
 #include "list.h"
 
+/**
+ * @def USER_SOURCE_FILE
+ * @brief Caminho padrão para o arquivo de usuários.
+ *
+ * Usado em main.c para abrir o arquivo de leitores:
+ * @code
+ * FILE *userF = OpenFileToRead(USER_SOURCE_FILE);
+ * @endcode
+ */
 #define USER_SOURCE_FILE "./leitores.txt"
 
 /**
- * @brief Opaque definition for the User structure
+ * @brief Tipo opaco que representa um usuário.
  */
 typedef struct user User;
 
-#include "recommendation.h"
-
 /**
- * @brief Create a User object
- * 
- * @param id Unique identifier for the user
- * @param name Name of the user
- * @param lenPreferences Number of reading preferences
- * @param preferences Array of strings representing the user's preferred genres
- * 
- * @pre name and preferences must be valid pointers; lenPreferences must match the actual number of preferences
- * @post User allocated and initialized with the given parameters and empty lists for books, recommendations, and affinities
- * 
- * @return User* - the initialized User object
+ * @brief Cria um novo usuário.
+ *
+ * Aloca e inicializa um objeto User com ID, nome e preferências.
+ *
+ * @param id              Identificador único do usuário.
+ * @param name            Nome completo do usuário (string NUL-terminated).
+ * @param lenPreferences  Quantidade de preferências em @p preferences.
+ * @param preferences     Vetor de strings com preferências literárias.
+ * @return Ponteiro para o novo User, ou NULL em falha de alocação.
  */
-User *CreateUser(int id, char *name, int lenPreferences, char **preferences);
+User *CreateUser(int id,
+                 char *name,
+                 int lenPreferences,
+                 char **preferences);
 
 /**
- * @brief Read and create a User object from a file
- * 
- * @param file Pointer to a FILE containing user data in the format: id;name;lenPreferences;preference1;preference2;...
- * 
- * @pre file must be a valid, open FILE pointer with properly formatted data
- * @post A new User is created and initialized with the data read from the file;
- *       returns NULL if end-of-file is reached before reading a user
- * 
- * @return User* - the initialized User object, or NULL if no more users to read
+ * @brief Lê um usuário de um arquivo de texto.
+ *
+ * Extrai campos formatados do arquivo e cria um User correspondente.
+ * Deve ser chamado após posicionar o cursor do arquivo após o cabeçalho.
+ *
+ * @param file Ponteiro para FILE aberto em modo leitura.
+ * @return Ponteiro para o User lido, ou NULL se EOF for atingido.
  */
 User *ReadUser(FILE *file);
 
 /**
- * @brief Compare the ID of a User object with a given ID
- * 
- * @param ptr Pointer to a User object (as void*)
- * @param args Variable argument list containing the ID to compare
- * 
- * @pre ptr must be a valid pointer to a User object; args must contain an int ID
- * @post none
- * 
- * @return int 1 if the User ID matches the given ID, 0 otherwise
+ * @brief Compara o ID interno de um User com chave variádica.
+ *
+ * Extrai um inteiro de @p args e retorna não-zero se corresponder
+ * ao ID do usuário.
+ *
+ * @param user  Ponteiro genérico para User.
+ * @param args  va_list contendo um inteiro esperado como ID.
+ * @return !=0 se IDs coincidirem, 0 caso contrário.
  */
 int CompareIdUser(void *user, va_list args);
 
 /**
- * @brief Print detailed information about a User
- * 
- * @param ptr Pointer to a User object (as void*)
- * @param unused An unused integer parameter (for compatibility)
- * 
- * @pre ptr must be a valid pointer to a User object
- * @post User information, including finished books, wished books, recommendations, and affinities, is printed to stdout
- * 
- * @return void
+ * @brief Imprime informações de um usuário.
+ *
+ * Exibe ID, nome e listas de livros (lidos, desejados, recomendados,
+ * afinidades) com indentação opcional.
+ *
+ * @param userPtr Ponteiro genérico para User.
+ * @param indent  Nível de indentação (número de espaços).
  */
-void PrintUser(void *user, int);
+void PrintUser(void *userPtr, int indent);
 
 /**
- * @brief Free all memory associated with a User object
- * 
- * @param ptr Pointer to a User object (as void*)
- * 
- * @pre ptr must be a valid pointer to a User object
- * @post All memory allocated for the User and its internal structures is freed
- * 
- * @return void
+ * @brief Libera toda a memória associada a um User.
+ *
+ * Desaloca listas internas, strings e a própria estrutura.
+ *
+ * @param userPtr Ponteiro genérico para User.
  */
-void FreeUser(void *user);
+void FreeUser(void *userPtr);
 
 /**
- * @brief Retrieve the ID of a User object
- * 
- * @param ptr Pointer to a User object (as void*)
- * 
- * @pre ptr must be a valid pointer to a User object
- * @post none
- * 
- * @return int - the ID of the User
+ * @brief Obtém o ID de um usuário.
+ *
+ * @param ptr Ponteiro genérico para User.
+ * @return Identificador numérico do usuário.
  */
 int GetIdUser(void *ptr);
 
 /**
- * @brief Retrieve the name of a User object
- * 
- * @param ptr Pointer to a User object (as void*)
- * 
- * @pre ptr must be a valid pointer to a User object
- * @post none
- * 
- * @return char* - the name of the User
+ * @brief Obtém o nome de um usuário.
+ *
+ * @param ptr Ponteiro genérico para User.
+ * @return Ponteiro para string contendo o nome do usuário.
  */
 char *GetNameUser(void *ptr);
 
 /**
- * @brief Check if two Users have compatible preferences
- * 
- * @param user1 Pointer to the first User object
- * @param user2 Pointer to the second User object
- * 
- * @pre user1 and user2 must be valid, initialized User pointers
- * @post none
- * 
- * @return int 1 if the users share at least one preference, 0 otherwise
- */
-int AreCompatibleUsers(User *user1, User *user2);
-
-/**
- * @brief Connect two Users by adding each other to their affinities if compatible
- * 
- * @param ptr1 Pointer to the first User object (as void*)
- * @param ptr2 Pointer to the second User object (as void*)
- * 
- * @pre ptr1 and ptr2 must be valid pointers to initialized User objects
- * @post If users are compatible, each user is added to the other's affinities list
- * 
- * @return void
+ * @brief Registra afinidade entre dois usuários.
+ *
+ * Conecta internamente @p ptr1 e @p ptr2 para indicar
+ * afinidade mútua em preferências literárias.
+ *
+ * @param ptr1 Ponteiro genérico para o primeiro User.
+ * @param ptr2 Ponteiro genérico para o segundo User.
  */
 void ConnectUsers(void *ptr1, void *ptr2);
 
 /**
- * @brief Add a Book to a User's finishedBooks list if not already present
- * 
- * @param user1 Pointer to the User object
- * @param book Pointer to the Book object
- * 
- * @pre user1 and book must be valid, initialized pointers
- * @post If the book was not already finished by the user, it is appended to finishedBooks and a message is printed;
- *       otherwise, a message indicating the book was already read is printed
- * 
- * @return void
+ * @brief Marca um livro como lido por um usuário.
+ *
+ * Adiciona @p book à lista de livros finalizados de @p user1.
+ *
+ * @param user1 Ponteiro para User que leu o livro.
+ * @param book  Ponteiro para Book lido.
  */
 void AddBookToFinishedUser(User *user1, Book *book);
 
 /**
- * @brief Add a Book to a User's wishedBooks list if not already present
- * 
- * @param user1 Pointer to the User object
- * @param book Pointer to the Book object
- * 
- * @pre user1 and book must be valid, initialized pointers
- * @post If the book was not already wished by the user, it is appended to wishedBooks and a message is printed;
- *       otherwise, a message indicating the book is already in the wished list is printed
- * 
- * @return void
+ * @brief Adiciona um livro à lista de desejos de um usuário.
+ *
+ * @param user1 Ponteiro para User que deseja o livro.
+ * @param book  Ponteiro para Book desejado.
  */
 void AddBookToWishedUser(User *user1, Book *book);
 
 /**
- * @brief Add a Book recommendation from one User to another if appropriate
- * 
- * @param user1 Pointer to the User making the recommendation
- * @param book Pointer to the Book being recommended
- * @param user2 Pointer to the User receiving the recommendation
- * 
- * @pre user1, user2, and book must be valid, initialized pointers
- * @post If user2 does not already wish to read or has not finished the book, a new Recommendation is created and added to user2's recommendations;
- *       otherwise, appropriate messages are printed indicating no need for recommendation
- * 
- * @return void
+ * @brief Registra recomendação de livro entre usuários.
+ *
+ * @param user1 Ponteiro para User que recomenda.
+ * @param book  Ponteiro para Book recomendado.
+ * @param user2 Ponteiro para User que recebe a recomendação.
  */
-void AddBookToRecommendedUser(User *user1, Book *book, User *user2);
+void AddBookToRecommendedUser(User *user1,
+                              Book *book,
+                              User *user2);
 
 /**
- * @brief Accept a recommended Book by adding it to the User's wishedBooks and removing the recommendation
- * 
- * @param user1 Pointer to the User accepting the recommendation
- * @param idBook ID of the recommended Book
- * @param user2 Pointer to the User who made the recommendation
- * 
- * @pre user1 and user2 must be valid, initialized User pointers
- * @post If the recommendation exists, the book is added to user1's wishedBooks, and the recommendation is removed and freed;
- *       otherwise, a message is printed indicating no such recommendation exists
- * 
- * @return void
+ * @brief Aceita recomendação de livro pendente.
+ *
+ * @param user1   Ponteiro para User que aceita a recomendação.
+ * @param idBook  ID do Book aceito.
+ * @param user2   Ponteiro para User que fez a recomendação.
  */
-void AcceptRecommendedBook(User *user1, int idBook, User *user2);
+void AcceptRecommendedBook(User *user1,
+                           int idBook,
+                           User *user2);
 
 /**
- * @brief Deny a recommended Book by removing the recommendation without adding the book
- * 
- * @param user1 Pointer to the User denying the recommendation
- * @param idBook ID of the recommended Book
- * @param user2 Pointer to the User who made the recommendation
- * 
- * @pre user1 and user2 must be valid, initialized User pointers
- * @post If the recommendation exists, it is removed from user1's recommendations and freed;
- *       otherwise, a message is printed indicating no such recommendation exists
- * 
- * @return void
+ * @brief Nega recomendação de livro pendente.
+ *
+ * @param user1   Ponteiro para User que nega a recomendação.
+ * @param idBook  ID do Book negado.
+ * @param user2   Ponteiro para User que fez a recomendação.
  */
-void DenyRecommendedBook(User *user1, int idBook, User *user2);
+void DenyRecommendedBook(User *user1,
+                         int idBook,
+                         User *user2);
 
 /**
- * @brief Print the list of books shared (finished) by two Users
- * 
- * @param user1 Pointer to the first User object
- * @param user2 Pointer to the second User object
- * 
- * @pre user1 and user2 must be valid, initialized User pointers
- * @post Prints the common finished books between the two users; if none, prints a message indicating so
- * 
- * @return void
+ * @brief Exibe livros compartilhados entre dois usuários.
+ *
+ * @param user1 Ponteiro para o primeiro User.
+ * @param user2 Ponteiro para o segundo User.
  */
 void PrintSharedBooksUsers(User *user1, User *user2);
 
 /**
- * @brief Check whether two Users are related through affinities using depth-first search
- * 
- * @param user1 Pointer to the starting User
- * @param user2 Pointer to the target User
- * 
- * @pre user1 and user2 must be valid, initialized User pointers
- * @post A depth-first search is performed from user1 through affinities to determine connection to user2
- * 
- * @return int 1 if user2 is reachable from user1 through affinity connections, 0 otherwise
+ * @brief Verifica se dois usuários possuem afinidade.
+ *
+ * @param user1 Ponteiro para o primeiro User.
+ * @param user2 Ponteiro para o segundo User.
+ * @return !=0 se existe afinidade, 0 caso contrário.
  */
 int AreRelatedUsers(User *user1, User *user2);

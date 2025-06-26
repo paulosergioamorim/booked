@@ -158,9 +158,9 @@ int GetIdUser(void *ptr)
 
 char *GetNameUser(void *ptr)
 {
-    assert(ptr);
-
-    return ((User *)ptr)->name;
+    User *user = (User *)ptr;
+    assert(user);
+    return user->name;
 }
 
 int AreCompatibleUsers(User *user1, User *user2)
