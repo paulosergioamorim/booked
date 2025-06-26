@@ -14,6 +14,16 @@
 
 #define MAX_LINE_LENGTH 256
 
+/**
+ * @brief Open a file for reading and writing
+ * 
+ * @param source Path to the file to be opened
+ * 
+ * @pre source must be a valid, non-null file path
+ * @post The file is opened in "r+" mode (reading and writing); program terminates if opening fails
+ * 
+ * @return FILE* - pointer to the opened file
+ */
 FILE *OpenFileToRead(char *source);
 
 typedef void (*free_fn)(void *);
