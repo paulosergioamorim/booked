@@ -18,18 +18,6 @@
     __UNIQUE_NOT_NULL(User *, user1, "Leitor", userList, id1) \
     __UNIQUE_NOT_NULL(User *, user2, "Leitor", userList, id2)
 #define UNIQUE_BOOK_NOT_NULL(id) __UNIQUE_NOT_NULL(Book *, book, "Livro", bookList, id)
-#define __READ_FILE(type, func, file, list) \
-    while (1)                               \
-    {                                       \
-        type var = func(file);              \
-        if (!var)                           \
-            break;                          \
-        AppendList(list, var);              \
-    }                                       \
-    fclose(file);
-#define READ_BOOK_AND_USER_FILES                      \
-    __READ_FILE(Book *, ReadBook, bookFile, bookList) \
-    __READ_FILE(User *, ReadUser, userFile, userList)
 
 typedef void (*command_fn)(COMMAND_PARAMS);
 
@@ -55,27 +43,47 @@ int main(int argc, char const *argv[])
 {
     List *bookList = CreateList(PrintBook, CompareIdBook);
     List *userList = CreateList(PrintUser, CompareIdUser);
-
     FILE *bookFile = NULL;
+    FILE *userFile = NULL;
+    FILE *commandFile = NULL;
+
     if ((bookFile = OpenFileToRead(BOOK_SOURCE_FILE)) == NULL)
     {
         printf("[ERRO] - Nao foi possivel abrir o arquivo 'livros.txt'\n");
         exit(1);
     }
 
-    FILE *userFile = NULL;
     if ((userFile = OpenFileToRead(USER_SOURCE_FILE)) == NULL)
     {
         printf("[ERRO] - Nao foi possivel abrir o arquivo 'leitores.txt'\n");
         exit(1);
     }
 
-    FILE *commandFile = NULL;
     if ((commandFile = OpenFileToRead(COMMAND_SOURCE_FILE)) == NULL)
     {
         printf("[ERRO] - Nao foi possivel abrir o arquivo 'comandos.txt'\n");
         exit(1);
     }
+
+    // Removendo as linhas de cabeçalho:
+    fscanf(bookFile, "%*[^\n]\n");
+    fscanf(commandFile, "%*[^\n]\n");
+    fscanf(userFile, "%*[^\n]\n");
+
+    Book *book = NULL;
+    User *user = NULL;
+
+    while ((book = ReadBook(bookFile)))
+    {
+        AppendList(bookList, book);
+    }
+
+    while ((user = ReadUser(userFile)))
+    {
+        AppendList(userList, user);
+    }
+
+    IterList(userList, ConnectUsers);
 
     command_fn commands[] = {
         format_AddBookToFinishedUser,    // 1
@@ -88,18 +96,11 @@ int main(int argc, char const *argv[])
         format_PrintUsers                // 8
     };
 
-    // Removebdo as linhas de cabeçalho:
-    fscanf(bookFile, "%*[^\n]\n");
-    fscanf(commandFile, "%*[^\n]\n");
-    fscanf(userFile, "%*[^\n]\n");
-
-    READ_BOOK_AND_USER_FILES;
-
-    IterList(userList, ConnectUsers);
-
     while (ExecuteCommand(commandFile, commands, userList, bookList))
         ;
 
+    fclose(bookFile);
+    fclose(userFile);
     fclose(commandFile);
 
     ForEach(bookList, FreeBook);
@@ -107,6 +108,7 @@ int main(int argc, char const *argv[])
 
     FreeList(bookList);
     FreeList(userList);
+
     return 0;
 }
 
@@ -173,8 +175,22 @@ void format_AddBookToRecommendedUser(COMMAND_PARAMS)
 
 void format_AcceptRecommendedBook(COMMAND_PARAMS)
 {
-    BOTH_USERS_NOT_NULL(idUser1, idUser2);
-    AcceptRecommendedBook(user1, idBook, user2);
+    User *recommendedUser = FindList(userList, idUser1);
+    User *recommendindUser = FindList(userList, idUser2);
+
+    if (!recommendindUser)
+    {
+        printf("Erro: Leitor recomendador com ID %d não encontrado\n", idUser2);
+        return;
+    }
+
+    if (!recommendedUser)
+    {
+        printf("Erro: Leitor com ID %d não encontrado\n", idUser1);
+        return;
+    }
+
+    AcceptRecommendedBook(recommendedUser, idBook, recommendindUser);
 }
 
 void format_DenyRecommendedBook(COMMAND_PARAMS)
@@ -190,7 +206,7 @@ void format_DenyRecommendedBook(COMMAND_PARAMS)
 
     if (!recommendedUser)
     {
-        printf("Erro: Leitor destinatário com ID %d não encontrado\n", idUser1);
+        printf("Erro: Leitor com ID %d não encontrado\n", idUser1);
         return;
     }
 
