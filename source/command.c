@@ -1,6 +1,17 @@
 #include "command.h"
 
-int ExecuteCommand(FILE *commandFile, command_fn commands[], List *userList, List *bookList)
+static command_fn commands[] = {
+    format_AddBookToFinishedUser,    // 1
+    format_AddBookToWishedUser,      // 2
+    format_AddBookToRecommendedUser, // 3
+    format_AcceptRecommendedBook,    // 4
+    format_DenyRecommendedBook,      // 5
+    format_PrintSharedBooksUsers,    // 6
+    format_AreRelatedUsers,          // 7
+    format_PrintUsers                // 8
+};
+
+int ExecuteCommand(FILE *commandFile, List *userList, List *bookList)
 {
     int op = 0;
     int idUser1 = 0;

@@ -54,18 +54,7 @@ int main(int argc, char const *argv[])
     fclose(userFile);
     IterList(userList, ConnectUsers);
 
-    command_fn commands[] = {
-        format_AddBookToFinishedUser,    // 1
-        format_AddBookToWishedUser,      // 2
-        format_AddBookToRecommendedUser, // 3
-        format_AcceptRecommendedBook,    // 4
-        format_DenyRecommendedBook,      // 5
-        format_PrintSharedBooksUsers,    // 6
-        format_AreRelatedUsers,          // 7
-        format_PrintUsers                // 8
-    };
-
-    while (ExecuteCommand(commandFile, commands, userList, bookList))
+    while (ExecuteCommand(commandFile, userList, bookList))
         ;
 
     fclose(commandFile);

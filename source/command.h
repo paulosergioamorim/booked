@@ -149,17 +149,15 @@ typedef void (*command_fn)(COMMAND_PARAMS);
  *   1. Lê quatro inteiros do @p commandFile.
  *   2. Se atingir EOF, retorna 0 para parar o processamento.
  *   3. Valida @p op dentro do intervalo de comandos disponíveis
- *      e chama o handler correspondente em @p commands[op-1].
+ *      e chama o handler correspondente.
  *   4. Retorna 1 para continuar processando o próximo comando.
  *
  * @param commandFile  Ponteiro para o arquivo de comandos (já aberto e sem cabeçalho).
- * @param commands     Array de funções @c command_fn indexadas por código de operação - 1.
  * @param userList     Lista de todos os usuários do sistema.
  * @param bookList     Lista de todos os livros do sistema.
  * @return             0 se EOF for alcançado (encerra loop), 1 caso contrário.
  */
 int ExecuteCommand(FILE *commandFile,
-                   command_fn commands[],
                    List *userList,
                    List *bookList);
 
