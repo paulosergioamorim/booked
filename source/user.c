@@ -129,9 +129,9 @@ int GetIdUser(void *ptr)
 
 char *GetNameUser(void *ptr)
 {
-    assert(ptr);
-
-    return ((User *)ptr)->name;
+    User *user = (User *)ptr;
+    assert(user);
+    return user->name;
 }
 
 int AreCompatibleUsers(User *user1, User *user2)
@@ -176,10 +176,6 @@ void PrintAfinity(void *ptr, int isLast)
         printf(", ");
     }
 }
-
-/*
- * TODO: IMPLEMENTAR FRASES DE LOG DAS FUNÇÕES ABAIXO
- */
 
 void AddBookToFinishedUser(User *user1, Book *book)
 {
