@@ -31,7 +31,36 @@ struct user
     List *afinities;
 };
 
-void PrintAfinity(void *ptr, int isLast);
+// ====DECLARAÇÃO DAS FUNÇÕES ESTÁTICAS====
+
+/**
+ * @brief Print the name of a User in an affinity list
+ * 
+ * @param ptr Pointer to a User object (as void*)
+ * @param isLast Integer flag indicating if this is the last element to be printed
+ * 
+ * @pre ptr must be a valid pointer to a User object
+ * @post The User's name is printed; if isLast is 0, prints a comma and space after the name
+ * 
+ * @return void
+ */
+static void PrintAfinity(void *ptr, int isLast);
+
+/**
+ * @brief Perform a depth-first search to find a User by ID within affinities, avoiding revisits
+ * 
+ * @param user Pointer to the current User node
+ * @param id ID of the User being searched for
+ * @param visited Pointer to a List tracking visited Users to prevent cycles
+ * 
+ * @pre user and visited must be valid, initialized pointers
+ * @post visited list is updated with Users visited during the search
+ * 
+ * @return int 1 if the User with the given ID is found, 0 otherwise
+ */
+static int SearchUser(User *user, int id, List *visited);
+
+// ====DEFINIÇÃO DAS FUNÇÕES====
 
 User *CreateUser(int id, char *name, int lenPreferences, char **preferences)
 {
@@ -165,7 +194,7 @@ void ConnectUsers(void *ptr1, void *ptr2)
     }
 }
 
-void PrintAfinity(void *ptr, int isLast)
+static void PrintAfinity(void *ptr, int isLast)
 {
     User *user = (User *)ptr;
     assert(user);
@@ -176,10 +205,6 @@ void PrintAfinity(void *ptr, int isLast)
         printf(", ");
     }
 }
-
-/*
- * TODO: IMPLEMENTAR FRASES DE LOG DAS FUNÇÕES ABAIXO
- */
 
 void AddBookToFinishedUser(User *user1, Book *book)
 {
@@ -271,7 +296,6 @@ void DenyRecommendedBook(User *user1, int idBook, User *user2)
     printf("%s não possui recomendação do livro ID %d feita por %s\n", user1->name, idBook, user2->name);
 }
 
-// corrigir depois
 void PrintSharedBooksUsers(User *user1, User *user2)
 {
     assert(user1);
@@ -279,7 +303,6 @@ void PrintSharedBooksUsers(User *user1, User *user2)
 
     printf("Livros em comum entre %s e %s: ", user1->name, user2->name);
 
-    // linha terrivelmente longa, desculpa.
     List *sharedBooks = GetCommonItemsList(user1->finishedBooks, user2->finishedBooks, CompareIdBook, PrintBook, CompareBooks);
 
     if (IsEmptyList(sharedBooks))
@@ -292,7 +315,7 @@ void PrintSharedBooksUsers(User *user1, User *user2)
     FreeList(sharedBooks);
 }
 
-int SearchUser(User *user, int id, List *visited)
+static int SearchUser(User *user, int id, List *visited)
 {
     assert(user);
     assert(visited);
