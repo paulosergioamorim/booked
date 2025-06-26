@@ -136,12 +136,20 @@ void *FindList(List *list, ...)
 void *GetFirstList(List *list)
 {
     assert(list);
+
+    if (IsEmptyList(list))
+        return NULL;
+
     return GetValue(list->first);
 }
 
 void *GetLastList(List *list)
 {
     assert(list);
+
+    if (IsEmptyList(list))
+        return NULL;
+
     return GetValue(list->last);
 }
 
