@@ -59,7 +59,6 @@ void AppendList(List *list, void *value)
 void RemoveList(List *list, ...)
 {
     assert(list);
-
     Cell *prev = NULL;
     Cell *cur = list->first;
     va_list keys_list;
@@ -68,7 +67,6 @@ void RemoveList(List *list, ...)
     while (cur)
     {
         va_list keys_copy;
-
         va_copy(keys_copy, keys_list);
 
         if (list->compare_key_fn(GetValue(cur), keys_copy))
@@ -138,19 +136,26 @@ void *FindList(List *list, ...)
 void *GetFirstList(List *list)
 {
     assert(list);
+
+    if (IsEmptyList(list))
+        return NULL;
+
     return GetValue(list->first);
 }
 
 void *GetLastList(List *list)
 {
     assert(list);
+
+    if (IsEmptyList(list))
+        return NULL;
+
     return GetValue(list->last);
 }
 
 Cell *GetFirstCellList(List *list)
 {
     assert(list);
-
     return list->first;
 }
 
